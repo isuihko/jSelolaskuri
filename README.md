@@ -1,6 +1,8 @@
 # jSelolaskuri
 Shakin vahvuuslukulaskenta, Java-versio
 
+3.4.2018: TODO: Teen tähän vielä samat muutokset kuin C#-versioonkin 1.-2.4.2018. Eli koodin järjestämistä, siistimistä ja dokumentointia. Tästä puuttuu myös C#-version valikot.
+
 Shakin vahvuusluvun laskenta
 
 30.11.2017 Java, NetBeans IDE 8.2
