@@ -1,7 +1,14 @@
 # jSelolaskuri
 Shakin vahvuuslukulaskenta, Java-versio
 
-3.4.2018: TODO: Teen tähän vielä samat muutokset kuin C#-versioonkin 1.-2.4.2018. Eli koodin järjestämistä, siistimistä ja dokumentointia. Tästä puuttuu myös C#-version valikot.
+27.5.2018 Started refactoring and documenting
+
+Refactoring. Still much to do to catch C#/.NET version of this same program.
+So far:  New class Vakiot.java for all constants. Naming of classes to better follow Java naming conventions (not ready yet). Menu. Verify closing of the window (are you sure). Some fixes to calculation which affected to rounding. New error statuses when checking the input and so can have better error messages.
+
+TODO: New classes. More fixes to checking of input and add more calculation.
+
+------
 
 Shakin vahvuusluvun laskenta
 
