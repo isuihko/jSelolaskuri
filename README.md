@@ -3,10 +3,9 @@ Shakin vahvuuslukulaskenta, Java-versio
 
 27.5.2018 Started refactoring and documenting
 
-Refactoring. Still much to do to catch C#/.NET version of this same program.
-So far:  New class Vakiot.java for all constants. Naming of classes to better follow Java naming conventions (not ready yet). Menu. Verify closing of the window (are you sure). Some fixes to calculation which affected to rounding. New error statuses when checking the input and so can have better error messages.
+31.7.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version.
 
-TODO: New classes. More fixes to checking of input and add more calculation.
+TODO: Check some Java-specific stuff. Also check some classes whether the data could be hidded (private instead of public). Anyway uploaded the code here because this is much better than the previous versions.
 
 ------
 
