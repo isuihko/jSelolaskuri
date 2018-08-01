@@ -3,10 +3,9 @@ Shakin vahvuuslukulaskenta, Java-versio
 
 27.5.2018 Started refactoring and documenting
 
-31.7.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version.
+31.7. - 1.8.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version. Data made hidden and used getters and setters.
 
-TODO: Check some Java-specific stuff. Also check some classes whether the data could be hidded (private instead of public). Anyway uploaded the code here because this is much better than the previous versions.
-
+TODO: Check some Java-specific stuff. Add Unit testing like in C# version.
 ------
 
 Shakin vahvuusluvun laskenta
