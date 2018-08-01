@@ -6,6 +6,7 @@ Shakin vahvuuslukulaskenta, Java-versio
 31.7. - 1.8.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version. Data made hidden and used getters and setters.
 
 TODO: Check some Java-specific stuff. Add Unit testing like in C# version.
+
 ------
 
 Shakin vahvuusluvun laskenta
