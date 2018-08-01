@@ -23,7 +23,6 @@ import java.util.ArrayList;
  * Luotu 29.11.2017
  */
 public class Selopelaaja {
-
     
     public int UusiSelo;
     public int UusiPelimaara;
@@ -48,7 +47,7 @@ public class Selopelaaja {
     
     // Tuloksien näyttämisessä tarvitaan alkuperäistä seloa -> muutos, sekä ero keskivahvuuteen
     public int AlkuperainenSelo() {                       // original chess rating
-        return alkuperaisetSyotteet.AlkuperainenSelo;
+        return alkuperaisetSyotteet.getAlkuperainenSelo();
     }
 
     // Tuloksien näyttämisessä tarvitaan tieto, koska odotustulosta ei näytetä uudelle pelaajalle
@@ -59,7 +58,7 @@ public class Selopelaaja {
     // Tuloksien näyttämisessä tarvitaan tieto, koska tulospainikkeet tyhjennetään varalta, jos niitä ei käytetty
     // Voivat jäädä päälle yhtä ottelua syötettäessä, jos vaihdettu tuloksen syöttötapa -> "1.0 1434" tai "+1434"
     public boolean KaytettiinkoTulospainikkeita() {          // one match, were the result buttons used?
-        return (alkuperaisetSyotteet.YksiVastustajaTulosnapit != 0);
+        return (alkuperaisetSyotteet.getYksiVastustajaTulosnapit() != 0);
     }
        
     
@@ -74,7 +73,7 @@ public class Selopelaaja {
     private int annettuTurnauksenTulos;
             
     // Tarvitaan oma erillinen setter, koska tehdään muunnos float -> kokonaisluku
-    public void SetAnnettuTurnauksenTulos(float f)
+    public void setAnnettuTurnauksenTulos(float f)
     {
         annettuTurnauksenTulos = (int)(2 * f + 0.01F); // pyöristys
     }
@@ -85,96 +84,6 @@ public class Selopelaaja {
     private Syotetiedot alkuperaisetSyotteet;
     
    
-
-/******************************************   
-    //   SETTERS & GETTERS
-
-    public void set_selo(int selo)
-    {
-        this.selo = selo;
-    }
-
-    public int get_selo()
-    {
-        return selo;
-    }
-
-    public void set_pelimaara(int pelimaara)
-    {
-        this.pelimaara = pelimaara;
-    }
-
-    public int get_pelimaara()
-    {
-        return pelimaara;
-    }
-
-    public void set_syotetty_turnauksen_tulos(float f)
-    {
-        // tallennetaan kokonaislukuna
-        //  0 = 0, tasapeli on 0.5:n sijaan 1, voitto on 1:n sijaan 2
-        annettuTurnauksenTulos = (int)(2 * f + 0.01F); // pyöristys kuntoon
-    }
-
-    public int get_syotetty_turnauksen_tulos()
-    {
-        return annettuTurnauksenTulos;
-    }
-
-
-    //   SETTERS ONLY
-
-    public void set_miettimisaika(int aika)
-    {
-        miettimisaika = aika;
-    }
-
-
-    //   GETTERS ONLY
-
-
-    public int get_selo_alkuperainen()
-    {
-        return alkuperainenSelo;
-    }
-
-    public int get_odotustulos()
-    {
-        return odotustulos;
-    }
-
-    public int get_kerroin()
-    {
-        return kerroin;
-    }
-
-    public int get_uusiselo()
-    {
-        return laskettuSelo;
-    }
-
-    public int get_uusipelimaara()
-    {
-        return uusi_pelimaara;
-    }
-
-    public int get_min_selo()
-    {
-        return minSelo;
-    }
-
-    public int get_max_selo()
-    {
-        return maxSelo;
-    }
-
-
-    public int get_turnauksen_tulos()
-    {
-        return turnauksen_tulos;
-    }
-******************************************/
-
     // --------------------------------------------------------------------------------
     // Laskenta
     // --------------------------------------------------------------------------------
@@ -188,8 +97,8 @@ public class Selopelaaja {
         alkuperaisetSyotteet = syotteet;  // selo, pelimaara, miettimisaika, lomakkeelle mm. seloero
 
         // laskettavat tiedot, selon ja pelimaaran laskenta aloitetaan syötetyistä arvoista
-        UusiSelo         = syotteet.AlkuperainenSelo;
-        UusiPelimaara    = syotteet.AlkuperainenPelimaara;
+        UusiSelo         = syotteet.getAlkuperainenSelo();
+        UusiPelimaara    = syotteet.getAlkuperainenPelimaara();
 
         TurnauksenTulos = 0;  // lasketaan otteluista kokonaislukuna
         Odotustulos     = 0;  // summa yksittäisten otteluiden odotustuloksista
@@ -205,8 +114,8 @@ public class Selopelaaja {
         // Lisäksi selvitä syötetiedoista (tarvitaan laskennassa, tulostetaan lomakkeelle)
         //   - vastustajien eli otteluiden lkm
         //   - turnauksen eli vastustajien keskivahvuus
-        VastustajienLkm        = syotteet.Ottelut.getLukumaara();
-        TurnauksenKeskivahvuus = syotteet.Ottelut.getKeskivahvuus(); 
+        VastustajienLkm        = syotteet.getOttelut().getLukumaara();
+        TurnauksenKeskivahvuus = syotteet.getOttelut().getKeskivahvuus(); 
     }
 
     
@@ -222,7 +131,7 @@ public class Selopelaaja {
     //
     public void PelaaKaikkiOttelut(Syotetiedot syotteet)
     {
-        Ottelulista ottelulista = syotteet.Ottelut;
+        Ottelulista ottelulista = syotteet.getOttelut();
 
         // asettaa omat tiedot (selo ja pelimäärä) seloPelaaja-luokkaan, nollaa tilastotiedot ym.
         AlustaLaskenta(syotteet);
@@ -265,10 +174,10 @@ public class Selopelaaja {
         // "+1525 =1600 -1611 +1558". Tällöin myös MinSelo ja MaxSelo voidaan selvittää.
         //
         Ottelu ottelu = ottelulista.HaeEnsimmainen(); // vastustajanSelo, ottelunTulos
-        while (ottelu.OttelunTulos != Vakiot.TULOS_MAARITTELEMATON) {
+        while (ottelu.getOttelunTulos() != Vakiot.TULOS_MAARITTELEMATON) {
 
             // päivitä seloa ja tilastoja jokaisen ottelun laskennassa, myös laske Odotustulos
-            UusiSelo = PelaaOttelu(ottelu.VastustajanSelo, ottelu.OttelunTulos);
+            UusiSelo = PelaaOttelu(ottelu.getVastustajanSelo(), ottelu.getOttelunTulos());
 
             // päivitä pelimäärää vain jos oli annettu
             if (UusiPelimaara != Vakiot.PELIMAARA_TYHJA)
@@ -288,10 +197,10 @@ public class Selopelaaja {
             // Aiemmasta laskennasta tarvitaan Odotustulos
             // apumuuttuja selo, koska sitä tarvitaan kaavassa usein
             //
-            int vanha = alkuperaisetSyotteet.AlkuperainenSelo; // aloitetaan alusta, oma apumuuttuja
+            int vanha = alkuperaisetSyotteet.getAlkuperainenSelo(); // aloitetaan alusta, oma apumuuttuja
             TurnauksenTulos = annettuTurnauksenTulos; // turnauksen tulos annettu, joten ei laskettavaa
 
-            if (alkuperaisetSyotteet.Miettimisaika <= Vakiot.MIETTIMISAIKA_ENINT_10MIN) {
+            if (alkuperaisetSyotteet.getMiettimisaika() <= Vakiot.MIETTIMISAIKA_ENINT_10MIN) {
                 //
                 // PELO: pikashakilla on oma laskentakaavansa
                 //
@@ -315,7 +224,7 @@ public class Selopelaaja {
                 //
                 // SELO: pidemmän miettimisajan pelit eli > 10 min
                 //
-                float lisakerroin = MaaritaLisakerroin(vanha, alkuperaisetSyotteet.Miettimisaika);
+                float lisakerroin = MaaritaLisakerroin(vanha, alkuperaisetSyotteet.getMiettimisaika());
                 // Lisätään vielä pelattujen pelien lkm * 0.1
                 UusiSelo =
                     (int)Math.round((vanha + MaaritaKerroin(vanha) * lisakerroin * (annettuTurnauksenTulos / 2F - Odotustulos / 100F)) + (ottelulista.getLukumaara() * 0.1F));
@@ -344,7 +253,7 @@ public class Selopelaaja {
 
         // Vanhan pelaajan SELOn laskennassa käytetään odotustulosta ja kerrointa
         //
-        odotustulos1    = MaaritaOdotustulos(alkuperaisetSyotteet.AlkuperainenSelo, vastustajanSelo);
+        odotustulos1    = MaaritaOdotustulos(alkuperaisetSyotteet.getAlkuperainenSelo(), vastustajanSelo);
 
         Odotustulos     += odotustulos1;  // monta ottelua, niin summa kunkin ottelun odotustuloksista
         TurnauksenTulos += (int)tulos;        
@@ -368,7 +277,7 @@ public class Selopelaaja {
             //
             // XXX: Käytetään kerrointa ja lisäkerrointa, jotka lasketaan laskennan aikaisesta vahvuusluvusta, OK?
             int kerroin1 = MaaritaKerroin(UusiSelo);
-            float lisakerroin = MaaritaLisakerroin(UusiSelo, alkuperaisetSyotteet.Miettimisaika);
+            float lisakerroin = MaaritaLisakerroin(UusiSelo, alkuperaisetSyotteet.getMiettimisaika());
 
             // vanhan pelaajan SELO, kun pelimäärä jätetty tyhjäksi tai on yli 10.
             selo = (int)Math.round((UusiSelo + kerroin1 * lisakerroin * (((int)tulos / 2F) - (odotustulos1 / 100F)) + 0.1F));
@@ -428,7 +337,7 @@ public class Selopelaaja {
         odotustulos = 50 + sign * index;
 
         // Pikashakissa ei odotustulosta rajoiteta 92:een        
-        return (odotustulos > 92 && alkuperaisetSyotteet.Miettimisaika >= Vakiot.MIETTIMISAIKA_11_59MIN) ? 92 : odotustulos;
+        return (odotustulos > 92 && alkuperaisetSyotteet.getMiettimisaika() >= Vakiot.MIETTIMISAIKA_11_59MIN) ? 92 : odotustulos;
     }    
     
         // Kerroin määritetään alkuperäisen selon mukaan.

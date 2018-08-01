@@ -9,13 +9,20 @@ package jSelolaskuri;
  *
  * @author Ismo
  */
-    public class Ottelu {
-        public int VastustajanSelo;
-        public int OttelunTulos;
+public class Ottelu {
+    private int VastustajanSelo;
+    private int OttelunTulos;
 
-        public Ottelu(int selo, int tulos)
-        {
-            VastustajanSelo = selo;
-            OttelunTulos = tulos;
-        }
+    public Ottelu(int selo, int tulos)
+    {
+        VastustajanSelo = selo;
+        OttelunTulos = tulos;
     }
+
+    public int getVastustajanSelo() {
+        return this.VastustajanSelo;
+    }
+    public int getOttelunTulos() {
+        return this.OttelunTulos;
+    }
+}

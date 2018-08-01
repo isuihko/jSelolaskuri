@@ -85,40 +85,40 @@ public class SelolaskuriOperations {
         
         do {
             // Hae ensin oma nykyinen vahvuusluku ja pelimäärä
-            if ((tulos = TarkistaOmaSelo(syotteet.AlkuperainenSelo_str)) == Vakiot.SYOTE_VIRHE_OMA_SELO)
+            if ((tulos = TarkistaOmaSelo(syotteet.getAlkuperainenSelo_str())) == Vakiot.SYOTE_VIRHE_OMA_SELO)
                 break;
-            syotteet.AlkuperainenSelo = tulos;
+            syotteet.setAlkuperainenSelo(tulos);
 
-            if ((tulos = TarkistaPelimaara(syotteet.AlkuperainenPelimaara_str)) == Vakiot.SYOTE_VIRHE_PELIMAARA)
+            if ((tulos = TarkistaPelimaara(syotteet.getAlkuperainenPelimaara_str())) == Vakiot.SYOTE_VIRHE_PELIMAARA)
                 break;
-            syotteet.AlkuperainenPelimaara = tulos;  // Voi olla PELIMAARA_TYHJA tai numero >= 0
+            syotteet.setAlkuperainenPelimaara(tulos);  // Voi olla PELIMAARA_TYHJA tai numero >= 0
 
 
             //    JOS YKSI OTTELU,   saadaan sen yhden vastustajan vahvuusluku, eikä otteluja ole listassa
             //    JOS MONTA OTTELUA, palautuu 0 ja ottelut on tallennettu tuloksineen listaan
-            if ((tulos = TarkistaVastustajanSelo(syotteet.Ottelut, syotteet.VastustajienSelot_str)) < Vakiot.SYOTE_STATUS_OK)
+            if ((tulos = TarkistaVastustajanSelo(syotteet.getOttelut(), syotteet.getVastustajienSelot_str())) < Vakiot.SYOTE_STATUS_OK)
                 break;
 
             // tässä siis voi olla vahvuusluku tai 0
-            syotteet.YksiVastustajaTulosnapit = tulos;
+            syotteet.setYksiVastustajaTulosnapit(tulos);
 
             // vain jos otteluita ei jo ole listalla (ja TarkistaVastustajanSelo palautti kelvollisen vahvuusluvun),
             // niin tarkista ottelutuloksen valintanapit -> TarkistaOttelunTulos()
             // ja sitten lisää tämä yksi ottelu listaan!
-            if (syotteet.Ottelut.getLukumaara() == 0) {
+            if (syotteet.getOttelut().getLukumaara() == 0) {
                 //
                 // Vastustajan vahvuusluku on nyt vastustajanSeloYksittainen-kentässä
                 // Haetaan vielä ottelunTulos -kenttään tulospisteet tuplana (0=tappio,1=tasapeli,2=voitto)
 
                 // Tarvitaan tulos (voitto, tasapeli tai tappio)
-                if ((tulos = TarkistaOttelunTulos(syotteet.OttelunTulos)) == Vakiot.SYOTE_VIRHE_BUTTON_TULOS)
+                if ((tulos = TarkistaOttelunTulos(syotteet.getOttelunTulos())) == Vakiot.SYOTE_VIRHE_BUTTON_TULOS)
                     break;
 
                 // Nyt voidaan tallentaa ainoan ottelun tiedot listaan (vastustajanSelo, ottelunTulos), josta
                 // ne on helppo hakea laskennassa.
                 // Myös vastustajanSeloYksittainen jää alustetuksi, koska siitä nähdään että vahvuusluku oli
                 // annettu erikseen, jolloin myös ottelun tuloksen on oltava annettuna valintapainikkeilla.
-                syotteet.Ottelut.LisaaOttelunTulos(syotteet.YksiVastustajaTulosnapit, syotteet.OttelunTulos);
+                syotteet.getOttelut().LisaaOttelunTulos(syotteet.getYksiVastustajaTulosnapit(), syotteet.getOttelunTulos());
             }
 
             tulos = Vakiot.SYOTE_STATUS_OK; // syötekentät OK, jos päästy tänne asti ja ottelu/ottelut ovat listassa
@@ -145,8 +145,6 @@ public class SelolaskuriOperations {
     {
         int tulos;
 
-        syote = syote.trim();  // remove leading and trailing white spaces
-
         // onko numero ja jos on, niin onko sallittu numero
         try {
             tulos = Integer.parseInt(syote);
@@ -160,15 +158,14 @@ public class SelolaskuriOperations {
         return tulos;
     }
     
-    // tarkista pelimäärä
+    // ************ TARKISTA PELIMÄÄRÄ ************
+    //
     // Saa olla tyhjä, mutta jos annettu, oltava numero, joka on 0-9999.
     // Jos pelimäärä on 0-10, tullaan käyttämään uuden pelaajan laskentakaavaa.
     // Paluuarvo joko kelvollinen pelimäärä, PELIMAARA_TYHJA tai VIRHE_PELIMAARA.
     private int TarkistaPelimaara(String syote)
     {
         int tulos;
-
-        syote = syote.trim();  // remove leading and trailing white spaces
 
         //
         // tarkista Pelimäärä -kenttä
@@ -191,7 +188,8 @@ public class SelolaskuriOperations {
     }
     
     
-    // Tarkista Vastustajan SELO -kenttä
+    // ************ TARKISTA VASTUSTAJAN SELO-KENTTÄ ************
+    //
     // Ottelut (selot ja tulokset) tallennetaan listaan
     //
     // Syöte voi olla annettu kolmella eri formaatilla:
@@ -221,11 +219,9 @@ public class SelolaskuriOperations {
 
         boolean onko_turnauksen_tulos = false;  // oliko tulos ensimmäisenä?
         float syotetty_tulos = 0F;           // tähän sitten sen tulos desimaalilukuna (esim. 2,5)        
-        
-        syote = syote.trim();
-        
+
         // kentässä voidaan antaa alussa turnauksen tulos, esim. 0.5, 2.0, 2.5, 7.5 eli saadut pisteet
-        selopelaaja.SetAnnettuTurnauksenTulos(-1.0F);  // oletus: ei annettu turnauksen tulosta        
+        selopelaaja.setAnnettuTurnauksenTulos(-1.0F);  // oletus: ei annettu turnauksen tulosta        
         
         if (syote.isEmpty()) {
             status = false;
@@ -249,22 +245,18 @@ public class SelolaskuriOperations {
             // Jäljellä vielä hankalammat tapaukset:
             // 4) turnauksen tulos+vahvuusluvut, esim. 2,5 1624 1700 1685 1400
             // 5) vahvuusluvut, joissa kussakin tulos  +1624 -1700 =1685 +1400
-
-            // poista sanojen väleistä ylimääräiset välilyönnit            
-            String result = syote.replaceAll("\\s+", " ");
-            syote = result;
             
             // Nyt voidaan jakaa syöte merkkijonoihin!
             String [] selostr = syote.split(" ");
-            List<String> selo_lista = Arrays.asList(selostr);
+            List<String> listaOtteluista = Arrays.asList(selostr);
             
             // Apumuuttujat
             int selo1 = Vakiot.MIN_SELO;
             boolean ensimmainen = true;  // ensimmäinen syötekentän numero tai merkkijono
             
             // Tutki vastustajanSelo_in -kenttä välilyönnein erotettu merkkijono kerrallaan
-            for (int i = 0; i < selo_lista.size(); i++) {
-                String vastustaja = selo_lista.get(i);
+            for (int i = 0; i < listaOtteluista.size(); i++) {
+                String vastustaja = listaOtteluista.get(i);
                 if (ensimmainen) {
                     // need to use temporary variable because can't modify foreach iteration variable
                     String tempString = vastustaja;
@@ -282,7 +274,7 @@ public class SelolaskuriOperations {
                             // HUOM! Jos tuloksessa on desimaalit väärin, esim. 2.37 tai 0,9,
                             //       niin ylimääräiset desimaalit "pyöristyvät" alas -> 2,0 tai 0,5.
                             onko_turnauksen_tulos = true;
-                            selopelaaja.SetAnnettuTurnauksenTulos(syotetty_tulos);
+                            selopelaaja.setAnnettuTurnauksenTulos(syotetty_tulos);
 
                             // alussa oli annettu turnauksen lopputulos, jatka SELOjen tarkistamista
                             // Nyt selojen on oltava ilman tulosmerkintää!

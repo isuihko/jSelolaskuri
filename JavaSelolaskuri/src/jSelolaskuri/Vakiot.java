@@ -17,7 +17,8 @@ public class Vakiot {
     static final int MAX_PELIMAARA     = 9999;
 
     // Vahvuuslukuarvon maksimipituus
-    static final int MAX_PITUUS  = 5; // Sisältää ottelun tuloksen kertovan +, - tai =
+    // Pituus 5  Sisältää ottelun tuloksen kertovan +, - tai =
+    static final int MAX_PITUUS  = 5;
     static final int SELO_PITUUS = 4;
 
     // Kun ottelumäärä on 0-10, käytetään uuden pelaajan laskentakaavaa

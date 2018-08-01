@@ -6,8 +6,17 @@
 package jSelolaskuri;
 
 
-import javax.swing.JOptionPane; // JOptionPane.showMessageDialog
-import java.awt.Color; // setForeground(Color.RED) or (Color.BLACK)
+import javax.swing.JOptionPane;
+/* Käytössä:    JOptionPane.showMessageDialog(null, 
+                        "ALERT MESSAGE", 
+                        "TITLE", 
+                        JOptionPane.WARNING_MESSAGE);
+*/
+import java.awt.Color; // Käytössä: setForeground(Color.RED) or (Color.BLACK)
+/* font = font.deriveFont(
+                Collections.singletonMap(
+                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+*/
 import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.util.Collections;
@@ -74,15 +83,16 @@ import javax.swing.JFrame;
  *              - Versiopvm 1.8.2018 -> GitHub jSelolaskuri
  * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
+ *        Aliohjelmiakin pitäisi jakaa pienempiin osiin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
  *        aina kun keksin, miten asioita kannattaa tehdä. Mm. radiobuttonien
  *        käsittely ei vielä ole kunnossa.
- *      - ADD: Unit Testing
+ *      - Unit Testing
  * 
  */
 
 
-// Esimerkkitapauksia:
+// Kuvia ohjelman toiminnasta:  (Esimerkkitapaukset samat kuin C#-versiossa)
 //
 // Pikashakin laskenta turnauksesta
 //      Miettimiaika     : enint. 10 min
@@ -98,18 +108,19 @@ import javax.swing.JFrame;
 //      Oma pelimäärä    : 0
 //      Vastustajan SELO : +1525 +1441 -1973 +1718 -1784 -1660 -1966
 // Tulos
-//      Uusi SELO        : 1695 +170 vaihteluväli 1683 - 1764
+//      Uusi SELO        : 1695 +170 (1683 - 1764)
 //
 // Samaan tulokseen päästään jälkimmäisessä, jos annetaan tulokset formaatissa
 //      Vastustajan SELO : 3 1525 1441 1973 1718 1784 1660 1966
 // Tai lähtemällä tilanteesta 1525 ja 0 ja sitten syöttämällä kukin ottelu erikseen
 // (vastustajan selo ja valintanapeista tulos, esim. 1525 (x) 1 = voitto)
 // ja klikkaamalla Käytä uutta SELOa jatkolaskennassa (seuraava 1441 (x) 1 = voitto jne.).
-// 
+
 
 
 public class JavaSelolaskuriForm extends javax.swing.JFrame {
-     
+  
+    
     SelolaskuriOperations so = new SelolaskuriOperations();
        
     /**
@@ -118,14 +129,15 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     public JavaSelolaskuriForm() {
         initComponents();
 
-        // Meillä on oma formWindowClosing-käsittely
+        // Oma formWindowClosing-tarkistus
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         // aloita oma selo-kentästä!
         selo_in.requestFocus();
     }
     
-      
+   
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -674,13 +686,11 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-           
-    // --------------------------------------------------------------------------------
-    // LOMAKKEEN KENTTIEN ARVOJEN HAKEMINEN
-    // --------------------------------------------------------------------------------
-    // Tietoja ei tarkisteta tässä
-    // Miettimisaika on aina kelvollinen, mutta merkkijonot eivät välttämättä
-    // Myös ottelun tulos voi/saa olla antamatta, joten silloin se on määrittelemätön
+    
+    
+    
+    //  KENTTIEN TARKASTUKSET
+
     private Syotetiedot HaeSyotteetLomakkeelta()
     {
         // Remove all leading and trailing white spaces from the form
@@ -692,8 +702,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         return new Syotetiedot(HaeMiettimisaika(), selo_in.getText(), pelimaara_in.getText(), vastustajanSelo_in.getText(), HaeOttelunTulos());
     }
 
-    // Nämä miettimisajan valintapainikkeet ovat omana ryhmänään paneelissa
-    // Aina on joku valittuna, joten ei voi olla virhetilannetta.
+    // Nämä valintapainikkeet ovat omana ryhmänään paneelissa
+    // Käynnistyksessä valitaan oletukseksi vähintään 90 min.
+    // Magic numbers:   90, 60, 15, 5
     private int HaeMiettimisaika()
     {
         int valinta;
@@ -709,7 +720,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         return valinta;
     }    
 
-    // Ottelun tulos voi olla valittu radiobuttoneilla tai valitsematta (MAARITTELEMATON)
     private int HaeOttelunTulos()
     {
         int valinta;
@@ -735,7 +745,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     // Suoritetaan laskenta -button
     private void laskeUusiSelo_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_laskeUusiSelo_btnActionPerformed
         LaskeOttelunTulosLomakkeelta();
-        // XXX: TODO: tallenna kelvolliset syötteet comboboxiin, kuten C#-versiossa       
     }//GEN-LAST:event_laskeUusiSelo_btnActionPerformed
    
     
@@ -924,12 +933,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         }
     }
     
-    
     // --------------------------------------------------------------------------------
     // Miettimisajan valinnan mukaan tekstit: SELO (pidempi peli) vai PELO (pikashakki)
     // --------------------------------------------------------------------------------
     private void vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum suunta)
     {
+        String tmpstr;
         String alkup, uusi;
 
         Font font = TuloksetPistemaaranKanssa_teksti.getFont();
@@ -942,6 +951,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             font = font.deriveFont(
                 Collections.singletonMap(
                     TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+
             TuloksetPistemaaranKanssa_teksti.setFont(font);                        
         }
         else
@@ -953,15 +963,27 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             font = font.deriveFont(
                 Collections.singletonMap(
                     TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
+
             TuloksetPistemaaranKanssa_teksti.setFont(font);
         }
 
-        OmaVahvuusluku_teksti.setText(OmaVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
-        VastustajanVahvuusluku_teksti.setText(VastustajanVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
-        TuloksetPistemaaranKanssa_teksti.setText(TuloksetPistemaaranKanssa_teksti.getText().replaceAll(alkup, uusi));
-        UusiSELO_teksti.setText(UusiSELO_teksti.getText().replaceAll(alkup, uusi));
-        laskeUusiSelo_btn.setText(laskeUusiSelo_btn.getText().replaceAll(alkup, uusi));
-        kaytaUutta_btn.setText(kaytaUutta_btn.getText().replaceAll(alkup, uusi));
+        tmpstr = OmaVahvuusluku_teksti.getText().replaceAll(alkup, uusi);
+        OmaVahvuusluku_teksti.setText(tmpstr);
+
+        tmpstr = VastustajanVahvuusluku_teksti.getText().replaceAll(alkup, uusi);
+        VastustajanVahvuusluku_teksti.setText(tmpstr);
+
+        tmpstr = TuloksetPistemaaranKanssa_teksti.getText().replaceAll(alkup, uusi);
+        TuloksetPistemaaranKanssa_teksti.setText(tmpstr);
+
+        tmpstr = UusiSELO_teksti.getText().replaceAll(alkup, uusi);
+        UusiSELO_teksti.setText(tmpstr);
+
+        tmpstr = laskeUusiSelo_btn.getText().replaceAll(alkup, uusi);
+        laskeUusiSelo_btn.setText(tmpstr);
+
+        tmpstr = kaytaUutta_btn.getText().replaceAll(alkup, uusi);
+        kaytaUutta_btn.setText(tmpstr);   
     }
     
     // Vaihda aktiiviseksi vähintään 90 minuuttia
@@ -1005,18 +1027,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     }//GEN-LAST:event_miettimisaika_enint10_btnActionPerformed
 
     
-    // --------------------------------------------------------------------------------
-    // Ottelun tulos-buttonit
-    // --------------------------------------------------------------------------------
-    // Suorita laskenta aina kun siirrytään tulos-painikkeeseen.
-    // Ennen laskentaa asetetaan nykyinen painike valituksi, koska sitä ei
-    // muutoin vielä oltu valittu kenttään siirryttäessä.
-    //
-    // Jos tässä vaiheessa ei ole vielä annettu SELOja, tulee virheilmoitus
-    // sekä siirrytään SELO-kenttään.
-    //    
+    
+
+    
+   
     // XXX: Seuraavassa pitäisi noiden radiobuttonien valintojen onnistua automaattisemminkin
-    //
+    
     private void tulosTappio_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tulosTappio_btnActionPerformed
         tulosVoitto_btn.setSelected(false);
         tulosTasapeli_btn.setSelected(false);
@@ -1093,7 +1109,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     private void vastustajanSelo_inKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_vastustajanSelo_inKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             LaskeOttelunTulosLomakkeelta();
-            // XXX: TODO: tallenna kelvolliset syötteet comboboxiin, kuten C#-versiossa
         }
     }//GEN-LAST:event_vastustajanSelo_inKeyPressed
 
@@ -1147,27 +1162,28 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "Myös C#: https://github.com/isuihko/selolaskuri";
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: Tietoa ohjelmasta", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
-
+    //
     // Lopetuksen varmistaminen
-    //      Valittu File->Sulje ohjelma -> Application.Exit()
-    // Sama toiminta kuin formWindowClosing(java.awt.event.WindowEvent evt)
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        int vastaus = JOptionPane.showConfirmDialog(null, 
-                "Haluatko poistua ohjelmasta?"); // Yes, No, Cancel
-        if (vastaus == JOptionPane.YES_OPTION)
-            JavaSelolaskuriForm.this.dispose();        
-    }                                                
-
-    // Lopetuksen varmistaminen
-    //      Suljettu ikkuna   
-    // Aiemmin on asetettu: setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    //      Suljettu ikkuna
+    //      Valittu Menu->Sulje ohjelma (-> Application.Exit())
+    // Aiemmin on kutsuttu: setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    //    
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         int vastaus = JOptionPane.showConfirmDialog(null, 
                 "Haluatko poistua ohjelmasta?"); // Yes, No, Cancel
         if (vastaus == JOptionPane.YES_OPTION)
             JavaSelolaskuriForm.this.dispose();
     }//GEN-LAST:event_formWindowClosing
-          
+    
+    // MenuItem: Sulje ohjelma
+    // Sama toiminta kuin formWindowClosing(java.awt.event.WindowEvent evt)
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        int vastaus = JOptionPane.showConfirmDialog(null, 
+                "Haluatko poistua ohjelmasta?"); // Yes, No, Cancel
+        if (vastaus == JOptionPane.YES_OPTION)
+            JavaSelolaskuriForm.this.dispose();        
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+       
  
 
     /**

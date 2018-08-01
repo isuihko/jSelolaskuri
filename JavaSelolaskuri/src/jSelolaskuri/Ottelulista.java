@@ -14,18 +14,6 @@ import java.util.List;
  */
 public class Ottelulista  {
 
-    /*
-    public class Ottelu {
-        public int VastustajanSelo;
-        public int OttelunTulos;
-
-        public Ottelu(int selo, int tulos)
-        {
-            VastustajanSelo = selo;
-            OttelunTulos = tulos;
-        }
-    }
-    */
     private final List<Ottelu> tallennetutOttelut = new ArrayList<>();
        
     public void LisaaOttelunTulos(int vastustajanSelo, int ottelunTulos)
@@ -63,7 +51,7 @@ public class Ottelulista  {
     public int getKeskivahvuus() {
         int summa = 0;
         for (int i = 0; i < getLukumaara(); i++)
-            summa += tallennetutOttelut.get(i).VastustajanSelo;
+            summa += tallennetutOttelut.get(i).getVastustajanSelo();
         return (int)Math.round((float)summa / getLukumaara());
     }
 }
