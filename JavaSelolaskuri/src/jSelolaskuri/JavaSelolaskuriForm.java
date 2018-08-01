@@ -872,32 +872,32 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     //   piste-ero
     private void NaytaTulokset(Selopelaaja tulokset)
     {
-        uusiSelo_out.setText(Integer.toString(tulokset.UusiSelo));
+        uusiSelo_out.setText(Integer.toString(tulokset.getUusiSelo()));
         
-        int i = tulokset.UusiSelo - tulokset.AlkuperainenSelo();
+        int i = tulokset.getUusiSelo() - tulokset.AlkuperainenSelo();
         selomuutos_out.setText(((i > 0) ? "+" : "") + Integer.toString(i));  // jos > 0, lisää '+'   sama kuin C# .ToString("+#;-#;0")
        
         //   uusi pelimäärä tai tyhjä
-        if (tulokset.UusiPelimaara >= 0)
-            uusi_pelimaara_out.setText(Integer.toString(tulokset.UusiPelimaara));
+        if (tulokset.getUusiPelimaara() >= 0)
+            uusi_pelimaara_out.setText(Integer.toString(tulokset.getUusiPelimaara()));
         else
             uusi_pelimaara_out.setText("");
         
         // piste-ero turnauksen keskivahvuuteen nähden
-        String tempstr = Integer.toString(Math.abs(tulokset.AlkuperainenSelo() - tulokset.TurnauksenKeskivahvuus));
+        String tempstr = Integer.toString(Math.abs(tulokset.AlkuperainenSelo() - tulokset.getTurnauksenKeskivahvuus()));
         pisteEro_out.setText(tempstr);
         
         // Vastustajien vahvuuslukujen keskiarvo
-        keskivahvuus_out.setText(Integer.toString(tulokset.TurnauksenKeskivahvuus));
+        keskivahvuus_out.setText(Integer.toString(tulokset.getTurnauksenKeskivahvuus()));
         
         // Turnauksen loppupisteet yhdellä desimaalilla / ottelujen lkm, esim.  2.5 / 6 tai 2.0 / 6
         tulos_out.setText(
-                Float.toString(tulokset.TurnauksenTulos / 2F) + " / " + Integer.toString(tulokset.VastustajienLkm));
+                Float.toString(tulokset.getTurnauksenTulos() / 2F) + " / " + Integer.toString(tulokset.getVastustajienLkm()));
                
         // Vahvuusluku on voinut vaihdella laskennan edetessä, jos vastustajat ovat olleet formaatissa "+1622 -1880 =1633"
         // Vaihteluväliä ei ole, jos laskenta on tehty yhdellä lausekkeella tai on ollut vain yksi vastustaja
-        if (tulokset.MinSelo < tulokset.MaxSelo)
-            vaihteluvali_out.setText(Integer.toString(tulokset.MinSelo) + " - " + Integer.toString(tulokset.MaxSelo));
+        if (tulokset.getMinSelo() < tulokset.getMaxSelo())
+            vaihteluvali_out.setText(Integer.toString(tulokset.getMinSelo()) + " - " + Integer.toString(tulokset.getMaxSelo()));
         else
             vaihteluvali_out.setText("");
        
@@ -907,7 +907,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             odotustulos_out.setText("");
             UudenPelaajanLaskenta_txt.setVisible(true);
         } else {
-            odotustulos_out.setText(Float.toString(tulokset.Odotustulos / 100F)); // not Double.toString
+            odotustulos_out.setText(Float.toString(tulokset.getOdotustulos() / 100F)); // not Double.toString
             UudenPelaajanLaskenta_txt.setVisible(false);
         }
 

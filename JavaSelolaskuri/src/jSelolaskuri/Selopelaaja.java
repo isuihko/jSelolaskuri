@@ -6,10 +6,7 @@
 
 package jSelolaskuri;
 
-// import java.lang.Math;   // Math.pow, Math.E
-
 import java.util.ArrayList;
-// import java.util.List;
 
 
 /**
@@ -24,27 +21,55 @@ import java.util.ArrayList;
  */
 public class Selopelaaja {
     
-    public int UusiSelo;
-    public int UusiPelimaara;
+    private int UusiSelo;
+    private int UusiPelimaara;
 
     // Lasketun selon vaihteluväli, jos vastustajien selot ja tulokset formaatissa: +1622 -1880 =1633
-    public int MinSelo;
-    public int MaxSelo;
+    private int MinSelo;
+    private int MaxSelo;
     
     // laskennan aputiedot
-    public int Odotustulos;
-    public int Kerroin;
+    private int Odotustulos;
+    private int Kerroin;
     
     // Turnauksen tulos
     //
     // Syötteistä laskettu tulos
     // Selvitetään tulos, jos ottelut formaatissa "+1525 =1600 -1611 +1558", josta esim. saadaan
     // tulokseksi 2,5 (2 voittoa ja 1 tasapeli). Tallennetaan kokonaislukuna tuplana (int)(2*2,5) eli 5.
-    public int TurnauksenTulos;
+    private int TurnauksenTulos;
     
-    public int VastustajienLkm;
-    public int TurnauksenKeskivahvuus;   
-    
+    private int VastustajienLkm;
+    private int TurnauksenKeskivahvuus;   
+
+    /* GETTERS FOR ABOVE DATA */
+    public int getUusiSelo() {
+        return this.UusiSelo;
+    }
+    public int getUusiPelimaara() {
+        return this.UusiPelimaara;
+    }
+    public int getMinSelo() {
+        return this.MinSelo;
+    }
+    public int getMaxSelo() {
+        return this.MaxSelo;
+    }
+    public int getOdotustulos() {
+        return this.Odotustulos;
+    }
+    public int getKerroin() {
+        return this.Kerroin;
+    }
+    public int getTurnauksenTulos() {
+        return this.TurnauksenTulos;
+    }
+    public int getVastustajienLkm() {
+        return this.VastustajienLkm;        
+    }
+    public int getTurnauksenKeskivahvuus() {
+        return this.TurnauksenKeskivahvuus;
+    }
     // Tuloksien näyttämisessä tarvitaan alkuperäistä seloa -> muutos, sekä ero keskivahvuuteen
     public int AlkuperainenSelo() {                       // original chess rating
         return alkuperaisetSyotteet.getAlkuperainenSelo();

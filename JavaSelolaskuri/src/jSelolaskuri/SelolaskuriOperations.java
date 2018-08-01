@@ -40,7 +40,7 @@ public class SelolaskuriOperations {
     // Palautetaan laskennasta saadut arvot, selo ja pelimäärä
     public int HaeViimeksiLaskettuSelo()
     {
-        int i = selopelaaja.UusiSelo;
+        int i = selopelaaja.getUusiSelo();
         if (i == 0)
             i = Vakiot.UUDEN_PELAAJAN_ALKUSELO;
         return i;
@@ -48,7 +48,7 @@ public class SelolaskuriOperations {
 
     public int HaeViimeksiLaskettuPelimaara()
     {
-        return selopelaaja.UusiPelimaara;
+        return selopelaaja.getUusiPelimaara();
     }
         
     // TarkistaSyote
@@ -251,7 +251,7 @@ public class SelolaskuriOperations {
             List<String> listaOtteluista = Arrays.asList(selostr);
             
             // Apumuuttujat
-            int selo1 = Vakiot.MIN_SELO;
+            int selo1; // = Vakiot.MIN_SELO;
             boolean ensimmainen = true;  // ensimmäinen syötekentän numero tai merkkijono
             
             // Tutki vastustajanSelo_in -kenttä välilyönnein erotettu merkkijono kerrallaan
