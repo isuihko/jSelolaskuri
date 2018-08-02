@@ -5,7 +5,7 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli
 
 31.7. - 1.8.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version. Data made hidden and used getters and setters. Added the exactly same unit tests that C# version has (modified to make them work).
 
-2.8.2018 Added jComboBox for storing opponent+result input (which can have a lot of number) for later use so it can be chosen again, modified and used in new calculations.
+2.8.2018 Added jComboBox for storing opponent+result input (which can have a lot of number) for later use so it can be chosen again, modified and used in new calculations. Added also executable file dist/JavaSelolaskuri.jar which can be downloaded and executed with command line java -jar JavaSelolaskuri.jar
 
 ------
 
@@ -15,6 +15,11 @@ Shakin vahvuusluvun laskenta
 
 - 31.7. - 2.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
 - Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat.
+
+Ohjelman suoritus (ainakin Windows):
+Lataa jar-tiedosto JavaSelolaskuri/dist-hakemistosta ja suorita se Windowsissa komentorivipromptissa komennolla java -jar JavaSelolaskuri.jar
+Suora latauslinkki: https://github.com/isuihko/jSelolaskuri/blob/master/JavaSelolaskuri/dist/JavaSelolaskuri.jar valitse Download.
+Java Runtime Environment pitää olla asennettuna, jotta tämä toimisi.
 
 Lasketaan shakinpelaajalle uusi vahvuusluku SELO tai PELO, ks. http://www.shakki.net/cgi-bin/selo
 - SELO on Suomen kansallinen shakin vahvuusluku, esim. https://fi.wikipedia.org/wiki/Elo-luku#Suomen_Elo
