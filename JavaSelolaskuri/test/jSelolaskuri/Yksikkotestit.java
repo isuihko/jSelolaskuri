@@ -257,6 +257,13 @@ public class Yksikkotestit {
         a(t.Item1, Vakiot.SYOTE_VIRHE_OMA_SELO);
     }
 
+    @Test
+    public void VirheellinenSyoteOmaSELOtyhja()
+    {
+        t = Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, "", "0", "1525", Vakiot.TULOS_VOITTO);
+        a(t.Item1, Vakiot.SYOTE_VIRHE_OMA_SELO);
+    }
+    
     // Testataan virheellinen syöte, tässä virheellinen vastustajan vahvuusluku
     @Test
     public void VirheellinenSyoteVastustajanSELO()
@@ -265,6 +272,13 @@ public class Yksikkotestit {
         a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
     }
 
+    @Test
+    public void VirheellinenSyoteVastustajanSELOtyhja()
+    {
+        t = Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, "1525", "0", "", Vakiot.TULOS_VOITTO);
+        a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
+    }
+    
     // Pelimäärä virheellinen, annettu liian suureksi
     @Test
     public void VirheellinenSyoteOmaPelimaara()
