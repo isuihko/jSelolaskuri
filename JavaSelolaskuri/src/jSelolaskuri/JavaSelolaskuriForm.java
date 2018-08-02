@@ -9,6 +9,7 @@ package jSelolaskuri;
 import javax.swing.JOptionPane; // JOptionPane.showMessageDialog
 import java.awt.Color; // setForeground(Color.RED) or (Color.BLACK)
 import java.awt.Font;
+import java.awt.event.KeyAdapter;   // KeyAdapter()
 import java.awt.font.TextAttribute;
 import java.util.Collections;
 import java.awt.event.KeyEvent;  // KeyEvent.VK_UP   .VK_DOWN
@@ -71,13 +72,26 @@ import javax.swing.JFrame;
  * 1.8.2018     - Luokkien Syotetiedot, Ottelu ja Ottelulista kenttiä public -> private
  *                ja lisätty niille tarvittavat Getter/Setter-rutiinit
  *              - Järjestetty näytön paneeleja (Design), jotta kentät tulisivat paremmille paikoille
+ *              - Unit Testing Yksikkotestit.java
+ *                Lisätty täsmälleen samat testitapaukset (22 kpl), jotka ovat C#-versiossakin.
  *              - Versiopvm 1.8.2018 -> GitHub jSelolaskuri
+ * 
+ * 2.8.2018     - Käyttöön vastustajanSelo_jComboBox (aiemmin vastustajanSelo_in -tekstikenttä).
+ *                jComboBoxiin tallenetaan kaikki siihen annetut vastustajien tiedot, jotta voidaan
+ *                tarvittaessa hakea aiemmat vastustajat/ottelut, muuttaa niitä ja laskea helposti uudestaan.
+ *                Tämä kenttä on ollut ohjelman C#-versiossa jo pidempään.
+ *                Tässä ei oteta talteen omaa vahvuuslukua tai omaa pelimäärää vaan vastustajat, joka
+ *                voi sisältää enemmänkin tietoa.
+ *                Tarvittiin KeyListener, jotta voidaan saada napattua Enter, jonka jälkeen suoritetaan laskenta.
+ *               -TarkistaVastustajanSelo() ei antanut virhestatusta, jos kenttä oli tyhjä.
+ *              - Estetty ikkunan koon muuttaminen: Design->Properties->Resizable-ruksi pois.
+ *              - Versiopvm 2.8.2018 -> GitHub jSelolaskuri
+ * 
  * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
- *        aina kun keksin, miten asioita kannattaa tehdä. Mm. radiobuttonien
- *        käsittely ei vielä ole kunnossa.
- *      - ADD: Unit Testing
+ *        aina kun keksin, miten asioita kannattaa tehdä.
+ *        Mm. radiobuttonien käsittely ei vielä ole kunnossa.
  * 
  */
 
@@ -123,6 +137,33 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         
         // aloita oma selo-kentästä!
         selo_in.requestFocus();
+        
+        // jComboBox-kentässä tarvitaan KeyListener, jotta voidaan suorittaa laskenta Enteriä painamalla
+        //
+        // Aiemmin oli käytössä tavallinen vastustajanSelo_in -tekstikenttä, jossa riitti Event-handler       
+        //    private void vastustajanSelo_inKeyPressed(java.awt.event.KeyEvent evt)
+        //          if (evt.getKeyCode() == KeyEvent.VK_ENTER) ...
+        //
+        vastustajanSelo_jComboBox.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+
+                    // Suorita laskenta, kun painettu Enter jComboBox-kentässä
+                    if (LaskeOttelunTulosLomakkeelta()) {
+                        // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
+                        // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
+                        // HUOM! Tämä sama koodi on myös Laske-painikkeen käsittelyssä
+                        String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+                        vastustajanSelo_jComboBox.setSelectedIndex(-1);            
+                        vastustajanSelo_jComboBox.setSelectedItem(s);
+                        if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
+                            vastustajanSelo_jComboBox.addItem(s);
+                        }               
+                    }                   
+                }
+            }             
+        });           
     }
     
       
@@ -141,10 +182,10 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         pelimaara_in = new javax.swing.JTextField();
         VastustajanVahvuusluku_teksti = new javax.swing.JLabel();
-        vastustajanSelo_in = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         TuloksetPistemaaranKanssa_teksti = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        vastustajanSelo_jComboBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         laskeUusiSelo_btn = new javax.swing.JButton();
         kaytaUutta_btn = new javax.swing.JButton();
@@ -190,6 +231,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1024, 1024));
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -202,17 +245,13 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
 
         VastustajanVahvuusluku_teksti.setText("Vastustajat:  SELO / SELOt tuloksineen / turnauksen pistemäärä ja SELOt");
 
-        vastustajanSelo_in.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                vastustajanSelo_inKeyPressed(evt);
-            }
-        });
-
         jLabel13.setText("Esim. +1725 -1910 =1812 (tai 1812), jossa + voitto, = tai tyhjä tasapeli, - tappio");
 
         TuloksetPistemaaranKanssa_teksti.setText("Tai pistemäärä ja vastustajien SELOt: 1.5 1725 1910 1812");
 
         jLabel5.setText("Jos annettu yksi vahvuusluku numerona (esim. 1720), niin tuloksen valinta:");
+
+        vastustajanSelo_jComboBox.setEditable(true);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -223,22 +262,25 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(OmaVahvuusluku_teksti)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(selo_in, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(50, 50, 50)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(pelimaara_in, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel3)))
-                    .addComponent(VastustajanVahvuusluku_teksti)
-                    .addComponent(vastustajanSelo_in, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(TuloksetPistemaaranKanssa_teksti)
-                    .addComponent(jLabel13))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(OmaVahvuusluku_teksti)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addGap(10, 10, 10)
+                                        .addComponent(selo_in, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(50, 50, 50)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addGap(10, 10, 10)
+                                        .addComponent(pelimaara_in, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel3)))
+                            .addComponent(VastustajanVahvuusluku_teksti)
+                            .addComponent(jLabel5)
+                            .addComponent(TuloksetPistemaaranKanssa_teksti)
+                            .addComponent(jLabel13))
+                        .addGap(0, 78, Short.MAX_VALUE))
+                    .addComponent(vastustajanSelo_jComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,7 +295,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(VastustajanVahvuusluku_teksti, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(vastustajanSelo_in, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(vastustajanSelo_jComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -282,7 +324,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 1.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 2.8.2018 github.com/isuihko/jSelolaskuri");
 
         jLabel15.setText("Vastustajien keskivahvuus");
 
@@ -558,6 +600,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jMenuBar1.setMaximumSize(new java.awt.Dimension(56, 21));
+
         jMenuBar.setText("File");
 
         jMenuItem1.setText("Ohjeita");
@@ -686,10 +730,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         // Remove all leading and trailing white spaces from the form
         selo_in.setText(selo_in.getText().trim());
         pelimaara_in.setText(pelimaara_in.getText().trim());
-        // poista sanojen väleistä ylimääräiset välilyönnit!
-        vastustajanSelo_in.setText(vastustajanSelo_in.getText().trim().replaceAll("\\s+", " "));
         
-        return new Syotetiedot(HaeMiettimisaika(), selo_in.getText(), pelimaara_in.getText(), vastustajanSelo_in.getText(), HaeOttelunTulos());
+        // poista sanojen väleistä ylimääräiset välilyönnit!
+        String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+        vastustajanSelo_jComboBox.setSelectedItem(s.trim().replaceAll("\\s+", " "));
+        
+        return new Syotetiedot(HaeMiettimisaika(), selo_in.getText(), pelimaara_in.getText(), (String)vastustajanSelo_jComboBox.getSelectedItem(), HaeOttelunTulos());
     }
 
     // Nämä miettimisajan valintapainikkeet ovat omana ryhmänään paneelissa
@@ -734,8 +780,17 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
 
     // Suoritetaan laskenta -button
     private void laskeUusiSelo_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_laskeUusiSelo_btnActionPerformed
-        LaskeOttelunTulosLomakkeelta();
-        // XXX: TODO: tallenna kelvolliset syötteet comboboxiin, kuten C#-versiossa       
+        if (LaskeOttelunTulosLomakkeelta()) {
+            // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
+            // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
+            // HUOM! Tämä sama koodi on myös kentän KeyListener():ssä, joka nappaa Enterin
+            String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+            vastustajanSelo_jComboBox.setSelectedIndex(-1);
+            vastustajanSelo_jComboBox.setSelectedItem(s);
+            if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
+                vastustajanSelo_jComboBox.addItem(s);
+            }
+        }
     }//GEN-LAST:event_laskeUusiSelo_btnActionPerformed
    
     
@@ -755,7 +810,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // vain, jos pelimaara oli annettu (muutoin on jo valmiiksi tyhjä)
             pelimaara_in.setText(Integer.toString(pelimaara1));
         }
-        vastustajanSelo_in.requestFocus();
+        vastustajanSelo_jComboBox.requestFocus();
     }//GEN-LAST:event_kaytaUutta_btnActionPerformed
 
         
@@ -783,13 +838,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 break;
                 
             case Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO:
-                vastustajanSelo_in.setForeground(Color.RED);
+                vastustajanSelo_jComboBox.setForeground(Color.RED); // XXX: DOES NOT CHANGE COLOR
                 JOptionPane.showMessageDialog(null,
                     "VIRHE: Vastustajan vahvuusluvun on oltava numero " + Vakiot.MIN_SELO + " - " + Vakiot.MAX_SELO,
                     "VIRHE",
                     JOptionPane.WARNING_MESSAGE);          
-                vastustajanSelo_in.setForeground(Color.BLACK);   // palauta väri                
-                vastustajanSelo_in.requestFocus();
+                vastustajanSelo_jComboBox.setForeground(Color.BLACK);   // palauta väri                
+               vastustajanSelo_jComboBox.requestFocus();
+
                 break;
                 
             case Vakiot.SYOTE_VIRHE_PELIMAARA:
@@ -812,23 +868,23 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 break;      
                 
             case Vakiot.SYOTE_VIRHE_YKSITTAINEN_TULOS:   
-                vastustajanSelo_in.setForeground(Color.RED);
+                vastustajanSelo_jComboBox.setForeground(Color.RED);
                 JOptionPane.showMessageDialog(null,
                     "VIRHE: Yksittäisen ottelun tulos voidaan antaa merkeillä +(voitto), =(tasapeli) tai -(tappio), esim. +1720. Tasapeli voidaan antaa muodossa =1720 ja 1720.",
                     "VIRHE",
                     JOptionPane.WARNING_MESSAGE);          
-                vastustajanSelo_in.setForeground(Color.BLACK);
-                vastustajanSelo_in.requestFocus();
+                vastustajanSelo_jComboBox.setForeground(Color.BLACK);
+                vastustajanSelo_jComboBox.requestFocus();
                 break;
                 
             case Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS:
-                vastustajanSelo_in.setForeground(Color.RED);
+                vastustajanSelo_jComboBox.setForeground(Color.RED);
                 JOptionPane.showMessageDialog(null,
                     "VIRHE: Turnauksen pistemäärä voi olla enintään sama kuin vastustajien lukumäärä.",
                     "VIRHE",
                     JOptionPane.WARNING_MESSAGE);          
-                vastustajanSelo_in.setForeground(Color.BLACK);
-                vastustajanSelo_in.requestFocus();                
+                vastustajanSelo_jComboBox.setForeground(Color.BLACK);
+                vastustajanSelo_jComboBox.requestFocus();                
                 break;
         } 
     }
@@ -1087,16 +1143,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         LaskeOttelunTulosLomakkeelta();
     }//GEN-LAST:event_tulosTasapeli_btnKeyPressed
 
-    // --------------------------------------------------------------------------------
-    // Kun painettu Enter vastustajan SELO-kentässä, suoritetaan laskenta
-    // --------------------------------------------------------------------------------
-    private void vastustajanSelo_inKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_vastustajanSelo_inKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            LaskeOttelunTulosLomakkeelta();
-            // XXX: TODO: tallenna kelvolliset syötteet comboboxiin, kuten C#-versiossa
-        }
-    }//GEN-LAST:event_vastustajanSelo_inKeyPressed
-
 
     // --------------------------------------------------------------------------------
     // File-Menu
@@ -1168,7 +1214,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             JavaSelolaskuriForm.this.dispose();
     }//GEN-LAST:event_formWindowClosing
           
- 
+    
+    
 
     /**
      * @param args the command line arguments
@@ -1263,7 +1310,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     private javax.swing.JTextField uusiSelo_out;
     private javax.swing.JTextField uusi_pelimaara_out;
     private javax.swing.JTextField vaihteluvali_out;
-    private javax.swing.JTextField vastustajanSelo_in;
+    private javax.swing.JComboBox<String> vastustajanSelo_jComboBox;
     // End of variables declaration//GEN-END:variables
 
 }

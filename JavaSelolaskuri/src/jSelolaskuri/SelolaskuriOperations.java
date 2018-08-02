@@ -225,6 +225,7 @@ public class SelolaskuriOperations {
         
         if (syote.isEmpty()) {
             status = false;
+            virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
         } else if (syote.length() == Vakiot.SELO_PITUUS) {
             
             try {
