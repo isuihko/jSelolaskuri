@@ -11,10 +11,12 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli
 
 Shakin vahvuusluvun laskenta
 
-30.11.2017 - 2.8.2018 Java, NetBeans IDE 8.2
+30.11.2017 - 3.8.2018 Java, NetBeans IDE 8.2
 
-- 31.7. - 2.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
+- 31.7. - 3.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
 - Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat.
+
+Lataaminen: Suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) git clone https://github.com/isuihko/jSelolaskuri
 
 Ohjelman suoritus (ainakin Windows):
 Lataa jar-tiedosto JavaSelolaskuri/dist-hakemistosta ja suorita se Windowsissa komentorivipromptissa komennolla java -jar JavaSelolaskuri.jar
