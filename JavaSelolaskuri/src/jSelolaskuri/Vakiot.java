@@ -27,12 +27,14 @@ public class Vakiot {
     
     // syötteen tarkastuksessa käytetyt virhestatukset eivät ole syötteiden arvoarvoalueella
     static final int SYOTE_STATUS_OK                = 0;
-    static final int SYOTE_VIRHE_OMA_SELO           = -1;
-    static final int SYOTE_VIRHE_VASTUSTAJAN_SELO   = -2;
-    static final int SYOTE_VIRHE_PELIMAARA          = -3;
-    static final int SYOTE_VIRHE_BUTTON_TULOS       = -4;
-    static final int SYOTE_VIRHE_YKSITTAINEN_TULOS  = -5;
-    static final int SYOTE_VIRHE_TURNAUKSEN_TULOS   = -6;
+    static final int SYOTE_VIRHE_MIETTIMISAIKA      = -1; // Tälle ei virheilmoitusta, koska toistaiseksi ei mahdollinen
+    static final int SYOTE_VIRHE_OMA_SELO           = -2;
+    static final int SYOTE_VIRHE_VASTUSTAJAN_SELO   = -3;
+    static final int SYOTE_VIRHE_PELIMAARA          = -4;
+    static final int SYOTE_VIRHE_BUTTON_TULOS       = -5;
+    static final int SYOTE_VIRHE_YKSITTAINEN_TULOS  = -6;
+    static final int SYOTE_VIRHE_TURNAUKSEN_TULOS   = -7;
+    static final int SYOTE_VIRHE_CSV_FORMAT         = -8;
     
     static final int PELIMAARA_TYHJA         = -1; // OK, muilla kuin uusilla pelaajilla voi olla tyhjä
         
@@ -45,10 +47,11 @@ public class Vakiot {
 
     // Miettimisajat (miettimisajan pituuden mukaan nousevassa järjestyksessä)
     // voisi käyttää myös enum
-    static final int MIETTIMISAIKA_ENINT_10MIN = 10; 
-    static final int MIETTIMISAIKA_11_59MIN    = 11;
-    static final int MIETTIMISAIKA_60_89MIN    = 60;
-    static final int MIETTIMISAIKA_VAH_90MIN   = 90;     
+    static final int MIETTIMISAIKA_MAARITTELEMATON  = -1;
+    static final int MIETTIMISAIKA_ENINT_10MIN      = 10;
+    static final int MIETTIMISAIKA_11_59MIN         = 59;
+    static final int MIETTIMISAIKA_60_89MIN         = 89;
+    static final int MIETTIMISAIKA_VAH_90MIN        = 90;
     
     // Miettimisaikojen vaihdon takia vaihdetaan kenttien tekstejä. SELO on pitkä peli ja PELO on pikashakki.
     // Esim. "Oma SELO" ja "Oma PELO".

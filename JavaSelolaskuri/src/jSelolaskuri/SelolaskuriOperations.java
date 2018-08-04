@@ -73,17 +73,18 @@ public class SelolaskuriOperations {
     // Virhetilanteet:
     //    Kenttiä tarkistetaan yo. järjestyksessä ja lopetetaan, kun kohdataan ensimmäinen virhe.
     //    Palautetaan tarkka virhestatus ja virheilmoitukset näytetään ylemmällä tasolla.
-    //
+    //   
     public int TarkistaSyote(Syotetiedot syotteet)
     {
         int tulos = Vakiot.SYOTE_STATUS_OK;
         
         // ************ TARKISTA SYÖTE ************
-
-        // ENSIN TARKISTA MIETTIMISAIKA.
-        // Miettimisaika on jo haettu lomakkeelta eikä siinä voi olla virhettä, joten OK
         
         do {
+            // ENSIN TARKISTA MIETTIMISAIKA.
+            if ((tulos = TarkistaMiettimisaika(syotteet.getMiettimisaika())) == Vakiot.SYOTE_VIRHE_MIETTIMISAIKA)
+                    break;
+            
             // Hae ensin oma nykyinen vahvuusluku ja pelimäärä
             if ((tulos = TarkistaOmaSelo(syotteet.getAlkuperainenSelo_str())) == Vakiot.SYOTE_VIRHE_OMA_SELO)
                 break;
@@ -136,6 +137,13 @@ public class SelolaskuriOperations {
     // Nämä miettimisajan valintapainikkeet ovat omana ryhmänään paneelissa
     // Aina on joku valittuna, joten ei voi olla virhetilannetta.
 
+    private int TarkistaMiettimisaika(int aika)
+    {
+        int tulos = Vakiot.SYOTE_STATUS_OK;
+        if (aika == Vakiot.MIETTIMISAIKA_MAARITTELEMATON)
+            tulos = Vakiot.SYOTE_VIRHE_MIETTIMISAIKA;
+        return tulos;
+    }
 
     // ************ TARKISTA NYKYINEN SELO ************
     //
@@ -224,7 +232,7 @@ public class SelolaskuriOperations {
         selopelaaja.setAnnettuTurnauksenTulos(-1.0F);  // oletus: ei annettu turnauksen tulosta        
         
         if (syote.isEmpty()) {
-            status = false;
+            status = false;  // XXX: this status value is unused, check the usage
             virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
         } else if (syote.length() == Vakiot.SELO_PITUUS) {
             
@@ -233,13 +241,13 @@ public class SelolaskuriOperations {
                 if (vastustajanSelo < Vakiot.MIN_SELO || vastustajanSelo > Vakiot.MAX_SELO) {
                     // 3) Numeron on oltava sallitulla lukualueella
                     //    Mutta jos oli OK, niin vastustajanSelo sisältää nyt sallitun vahvuusluvun eikä tulla tähän
-                    status = false;
+                    status = false; // XXX: this status value is unused, check the usage
                     virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
                 }
             }
             catch (NumberFormatException e) {
                 // 2) Jos on annettu neljä merkkiä (esim. 1728), niin sen on oltava numero
-                status = false;
+                status = false; // XXX: this status value is unused, check the usage
                 virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
             }       
         } else {
@@ -399,7 +407,42 @@ public class SelolaskuriOperations {
         return virhekoodi < 0 ? virhekoodi : vastustajanSelo;       
     }
     
+  
+    // Miettimisaika, vain minuutit, esim. "5" tai "90"
+    public int SelvitaMiettimisaika(String s)
+    {
+        int aika = Vakiot.MIETTIMISAIKA_MAARITTELEMATON;
+        
+        try {
+            aika = Integer.parseInt(s);
+            if (aika <= Vakiot.MIETTIMISAIKA_ENINT_10MIN)
+                aika = Vakiot.MIETTIMISAIKA_ENINT_10MIN;
+            else if (aika <= Vakiot.MIETTIMISAIKA_11_59MIN)
+                aika = Vakiot.MIETTIMISAIKA_11_59MIN;
+            else if (aika <= Vakiot.MIETTIMISAIKA_60_89MIN)
+                aika = Vakiot.MIETTIMISAIKA_60_89MIN;
+            else
+                aika = Vakiot.MIETTIMISAIKA_VAH_90MIN;
+        }
+        catch (NumberFormatException e) {
+            // Do nothing, aika is already initialized
+        }
+        return aika;        
+    }
     
+    // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
+    public int SelvitaTulos(String s)
+    {
+        int tulos = Vakiot.TULOS_MAARITTELEMATON;
+        if (s.equals("0") || s.equals("0.0") || s.equals("0,0"))
+            tulos = Vakiot.TULOS_TAPPIO;
+        else if (s.equals("0.5") || s.equals("0,5") || s.equals("1/2"))
+            tulos = Vakiot.TULOS_TASAPELI;
+        else if (s.equals("1") || s.equals("1.0") || s.equals("1,0"))
+            tulos = Vakiot.TULOS_VOITTO;
+        return tulos;        
+    }
+        
     // Tarkista valitun ottelun tulos -painikkeen kelvollisuus
     // Virhestatus palautetaan, jos oli valittu TULOS_MAARITTELEMATON
     //

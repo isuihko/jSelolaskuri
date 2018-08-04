@@ -18,6 +18,8 @@ public class Yksikkotestit {
     
     public Yksikkotestit() {
     }
+
+    SelolaskuriOperations so = new SelolaskuriOperations();
     
     /* TESTS WERE CONVERTED FROM C# version UnitTests
      *  e.g. Here we use class TestiTulokset instead of Tuple<int><Selopelaaja>
@@ -61,6 +63,7 @@ public class Yksikkotestit {
         a(t.Item2.getTurnauksenTulos(), 1 * 2);
         a(t.Item2.getTurnauksenKeskivahvuus(), 1441);
         a(t.Item2.getOdotustulos(), 84);               // 0,84*100
+        
         t = Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1973", Vakiot.TULOS_TAPPIO);
         a(t.Item1, Vakiot.SYOTE_STATUS_OK);
         a(t.Item2.getUusiSelo(), 1713);
@@ -339,12 +342,70 @@ public class Yksikkotestit {
         a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
     }
 
+    @Test
+    public void CSV_UudenPelaajanOttelutYksittain1()
+    {
+        t = Testaa("90,1525,0,1525,1");
+        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
+        a(t.Item2.getUusiSelo(), 1725);
+        a(t.Item2.getUusiPelimaara(), 1);
+        a(t.Item2.getTurnauksenTulos(), 1 * 2);        // tulos voitto (tulee kokonaislukuna 2)
+        a(t.Item2.getTurnauksenKeskivahvuus(), 1525);  // keskivahvuus
+        a(t.Item2.getVastustajienLkm(), 1);            // yksi vastustaja
+        a(t.Item2.getOdotustulos(), 50);               // 0,50*100  odotustulos palautuu 100-kertaisena
+        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo
+        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo              
+    }
+    @Test
+    public void CSV_UudenPelaajanOttelutKerralla1()
+    {
+        t = Testaa("90,1525,0,+1525 +1441 -1973 +1718 -1784 -1660 -1966");
+        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
+        a(t.Item2.getUusiSelo(), 1695);
+        a(t.Item2.getUusiPelimaara(), 7);
+        a(t.Item2.getTurnauksenTulos(), 3 * 2);
+        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
+        a(t.Item2.getVastustajienLkm(), 7);
+        a(t.Item2.getOdotustulos(), 199);          // odotustulos 1,99*100
+        a(t.Item2.getMinSelo(), 1683);             // laskennan aikainen minimi
+        a(t.Item2.getMaxSelo(), 1764);             // laskennan aikainen maksimi
+    }
+
+    @Test
+    public void CSV_UudenPelaajanOttelutKerralla2()
+    {
+        t = Testaa("90,1525,0,3 1525 1441 1973 1718 1784 1660 1966");
+        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
+        a(t.Item2.getUusiSelo(), 1695);
+        a(t.Item2.getUusiPelimaara(), 7);
+        a(t.Item2.getTurnauksenTulos(), 3 * 2);
+        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
+        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    
+    @Test
+    public void CSV_PikashakinVahvuuslukuTurnauksesta()
+    {
+        t = Testaa("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
+        a(t.Item2.getUusiSelo(), 2033);
+        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
+        a(t.Item2.getTurnauksenTulos(), (int)(10.5F * 2));
+        a(t.Item2.getTurnauksenKeskivahvuus(), 1827);  // (1977+2013+1923+1728+1638+1684+1977+2013+1923+1728+1638+1684)/12 = 1827,167
+        a(t.Item2.getVastustajienLkm(), 12);           // 12 vastustajaa eli ottelua
+        a(t.Item2.getOdotustulos(), 840);              // odotustulos 8,40*100
+        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+    
     // --------------------------------------------------------------------------------
     // Testauksen apurutiini
     // --------------------------------------------------------------------------------
     private Testitulokset Testaa(int aika, String selo, String pelimaara, String vastustajat, int tulos)
     {
-        SelolaskuriOperations so = new SelolaskuriOperations();
+        //SelolaskuriOperations so = new SelolaskuriOperations();
         Syotetiedot syotetiedot = new Syotetiedot(aika, selo, pelimaara, vastustajat, tulos, /*doTrim*/true);
         int status;
         Selopelaaja tulokset = null;
@@ -354,6 +415,31 @@ public class Yksikkotestit {
         }
         
         return new Testitulokset(status, tulokset);
+    }
+    
+        
+    // CSV example
+    // 90,1525,0,1725,1
+    // "90","1710","5","-1973",""
+    // Normaalisti 5 merkkijonoa
+    // Jos 4: ottelun tulos on antamatta, käytetään TULOS_MAARITTELEMATON
+    // Jos 3: Myös miettimisaika on antamatta, käytetään oletuksena MIETTIMISAIKA_VAH_90MIN
+    // Jos 2: Myös pelimäärä on antamatta, käytetään oletuksena tyhjää ""
+    private Testitulokset Testaa(String csv)
+    {
+        String[] data = csv.split(",");
+        if (data.length == 5) {
+            return Testaa(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], so.SelvitaTulos(data[4]));
+        } else if (data.length == 4) {
+            return Testaa(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.TULOS_MAARITTELEMATON);
+        } else if (data.length == 3) {
+            return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, data[0], data[1], data[2], Vakiot.TULOS_MAARITTELEMATON);
+        } else if (data.length == 2) {
+            return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, data[0], "", data[1], Vakiot.TULOS_MAARITTELEMATON);
+        } else {
+            assertEquals(5, data.length); // -> Illegal CSV
+            return null;
+        }
     }
     
     /* IN C# PARAMETERS WERE IN DIFFERENT ORDER */

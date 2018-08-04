@@ -11,18 +11,18 @@ package jSelolaskuri;
  */
 public class Syotetiedot {
     // Alkuperäiset syötteet (sama järjestys kuin näytöllä)
-    private final int  Miettimisaika;
+    private final int    Miettimisaika;
     private final String AlkuperainenSelo_str;
     private final String AlkuperainenPelimaara_str;
     private final String VastustajienSelot_str;  // vastustajan/vastustajien tiedot ja tulokset
-    private final int OttelunTulos;
+    private final int    OttelunTulos;
 
     // Tarkastuksessa merkkijonot muutettu numeroiksi, näille kolmelle getter ja setter
     private int AlkuperainenSelo;
     private int AlkuperainenPelimaara;
     private int YksiVastustajaTulosnapit;
 
-    private final Ottelulista Ottelut;   // sis. vastustajien selot ja ottelutulokset
+    private static Ottelulista Ottelut;   // sis. vastustajien selot ja ottelutulokset
 
     /* GETTERS AND SETTERS */
     
@@ -70,22 +70,25 @@ public class Syotetiedot {
     //public Syotetiedot() : this(Vakiot.MIETTIMISAIKA_VAH_90MIN, null, null, null, Vakiot.TULOS_MAARITTELEMATON)
     //{          
     //}
-
     public Syotetiedot(int aika, String selo, String pelimaara, String vastustajat, int tulos)
     {
         this(aika, selo, pelimaara, vastustajat, tulos, /*doTrim*/false);
     }
-    
+       
     // KÄYTETÄÄN TESTATTAESSA (UnitTest)
     // esim. Syotetiedot ottelu =
     //   new Syotetiedot(Vakiot.MIETTIMISAIKA_VAH_90MIN, "1725", "1", "1441", Vakiot.TULOS_VOITTO, /*doTrim*/true);
+    //
+    // Tarkistus: vastustajat voi olla null, koska vastustajanSelo_jComboBox.getSelectedItem() voi olla null
     public Syotetiedot(int aika, String selo, String pelimaara, String vastustajat, int tulos, boolean doTrim)
     {
         this.Miettimisaika              = aika;
-        // if doTrim -> remove leading and trailing white spaces
+        // if doTrim -> remove leading and trailing white spaces       
         this.AlkuperainenSelo_str       = doTrim ? selo.trim() : selo;
         this.AlkuperainenPelimaara_str  = doTrim ? pelimaara.trim() : pelimaara;
-        if (doTrim) {
+        if (vastustajat == null) {  // jComboBox.getSelectedItem() could had been null
+            vastustajat = "";
+        } else if (doTrim) {
             // poista sanojen väleistä ylimääräiset välilyönnit            
             vastustajat = vastustajat.trim().replaceAll("\\s+", " ");
         }
@@ -100,7 +103,7 @@ public class Syotetiedot {
         // Create en empty list for matches (opponent's selo, match result)
         this.Ottelut = new Ottelulista();
     }
-
+   
     // Uuden pelaajan laskennassa ja tulostuksissa joitain erikoistapauksia
     //
     // Tarkistetaan alkuperäisestä pelimäärästä, koska turnauksen laskenta tehdään
