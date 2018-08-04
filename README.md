@@ -1,5 +1,5 @@
 # jSelolaskuri
-Shakin vahvuuslukulaskenta, Java-ohjelmointikieli
+Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop application)
 
 27.5.2018 Started refactoring and documenting
 
@@ -7,14 +7,16 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli
 
 2.8.2018 Added jComboBox for storing opponent+result input (which can have a lot of number) for later use so it can be chosen again, modified and used in new calculations. Added also executable file dist/JavaSelolaskuri.jar which can be downloaded and executed with command line java -jar JavaSelolaskuri.jar
 
+4.8.2018 Added support for CSV format with 2-5 values. E.g. with two values can give own selo,matches e.g. 1712,2.5 1525 1600 1611 1558
+
 ------
 
 Shakin vahvuusluvun laskenta
 
-30.11.2017 - 3.8.2018 Java, NetBeans IDE 8.2
+30.11.2017 - 4.8.2018 Java, NetBeans IDE 8.2
 
-- 31.7. - 3.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
-- Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat.
+- 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
+- Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat (paitsi nyt Java-versiossa on CSV, joka vielä muuttuu C#:sta)
 
 Lataaminen: Suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) git clone https://github.com/isuihko/jSelolaskuri
 
