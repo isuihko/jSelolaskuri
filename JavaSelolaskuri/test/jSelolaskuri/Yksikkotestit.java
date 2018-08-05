@@ -418,11 +418,10 @@ public class Yksikkotestit {
     }
     
         
-    // CSV example
+    // CSV 
     // 90,1525,0,1725,1
-    // "90","1710","5","-1973",""
-    // Normaalisti 5 merkkijonoa
-    // Jos 4: ottelun tulos on antamatta, käytetään TULOS_MAARITTELEMATON
+    // Jos 5 merkkijonoa:  minuutit,selo,pelimäärä,vastustajat,jos_yksi_selo_niin_tulos
+    // Jos 4: ottelun tulosta ei anneta, käytetään TULOS_MAARITTELEMATON
     // Jos 3: Myös miettimisaika on antamatta, käytetään oletuksena MIETTIMISAIKA_VAH_90MIN
     // Jos 2: Myös pelimäärä on antamatta, käytetään oletuksena tyhjää ""
     private Testitulokset Testaa(String csv)

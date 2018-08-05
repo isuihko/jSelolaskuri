@@ -85,7 +85,12 @@ public class Selopelaaja {
     public boolean KaytettiinkoTulospainikkeita() {          // one match, were the result buttons used?
         return (alkuperaisetSyotteet.getYksiVastustajaTulosnapit() != 0);
     }
-       
+    
+    // Tuloksien näyttämisessä tarkista miettimisaika, jos csv-formaattia käytettäessä vaihdettu
+    // Päivitä näytölle oikeat SELO- tai PELO-tekstit
+    public int getMiettimisaika() {
+        return alkuperaisetSyotteet.getMiettimisaika();
+    }
     
     // Mahdollisesti annettu turnauksen tulos voi olla 0 - vastustajienlkm
     // Tallennetaan kokonaislukuna tuplana: esim. (int)(2*10,5) eli 21

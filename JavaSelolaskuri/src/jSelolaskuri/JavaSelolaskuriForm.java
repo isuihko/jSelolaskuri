@@ -335,7 +335,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 4.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 5.8.2018 github.com/isuihko/jSelolaskuri");
 
         tulos_out.setEditable(false);
         tulos_out.setFocusable(false);
@@ -719,6 +719,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         
         // poista sanojen väleistä ylimääräiset välilyönnit!
         String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+        // jComboBox.getSelectedItem() could had been null
         if (s != null) {
             s = s.trim();
             vastustajanSelo_jComboBox.setSelectedItem(s);  // XXX: CHECK THIS, CLEAN CODE
@@ -729,16 +730,15 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // Tarkista, onko csv ja jos on, niin unohda muut syötteet
             // Paitsi jos on väärässä formaatissa, palautetaan null ja kutsuvalla tasolla virheilmoitus
             //
-            // CSV example
+            // CSV 
             // 90,1525,0,1725,1
-            // "90","1710","5","-1973",""
-            // Normaalisti 5 merkkijonoa
-            // Jos 4: ottelun tulos on antamatta, käytetään TULOS_MAARITTELEMATON
-            // Jos 3: Myös miettimisaika on antamatta, käytetään lomakkeelta valittua miettimisaikaa
-            // Jos 2: Myös pelimäärä on antamatta, käytetään oletuksena tyhjää ""
+            // Jos 5 merkkijonoa:  minuutit,selo,pelimäärä,vastustajat,jos_yksi_selo_niin_tulos
+            // Jos 4: ottelun tulosta ei anneta, käytetään TULOS_MAARITTELEMATON
+            // Jos 3: miettimisaikaa ei anneta, käytetään lomakkeelta valittua miettimisaikaa
+            // Jos 2: pelimäärää ei anneta, käytetään oletuksena tyhjää ""
             //
-            s = (String)vastustajanSelo_jComboBox.getSelectedItem();
-            String[] data = s.split(",");
+            String csv = (String)vastustajanSelo_jComboBox.getSelectedItem();
+            String[] data = csv.split(",");
             if (data.length == 5) {
                 return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], so.SelvitaTulos(data[4]));
             } else if (data.length == 4) {
@@ -907,7 +907,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 
             case Vakiot.SYOTE_VIRHE_CSV_FORMAT:
                 JOptionPane.showMessageDialog(null,
-                        "CSV-formaattivirhe",
+                        "CSV-formaattivirhe, ks. File->Ohjeita",
                         "VIRHE",
                         JOptionPane.WARNING_MESSAGE);                
                 vastustajanSelo_jComboBox.requestFocus();
@@ -1008,6 +1008,20 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             tulosTasapeli_btn.setSelected(false);
             tulosVoitto_btn.setSelected(false);
         }
+        
+        // Jos käytetty CSV-formaattia, on voitu antaa eri miettimisaika kuin mitä valittu buttoneilla,
+        // joten varmuuden vuoksi päivitetään SELO- ja PELO-tekstit (vaikka voivat jo olla oikein)
+        // Turhan päivittämisen voisi estää lisäämällä flag syötetietoihin kertomaan, oliko csv:ssä miettimisaika.
+        //
+        // Ei riitä tarkistaa, onko valittu eri kuin näytöllä, koska tekstit on voitu vaihtaa välillä
+        //if (tulokset.getMiettimisaika() != HaeMiettimisaika()) {
+            if (tulokset.getMiettimisaika() == Vakiot.MIETTIMISAIKA_ENINT_10MIN)
+                vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_PELOKSI);
+            else
+                vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_SELOKSI);
+        //}
+        
+        
     }
     
     
