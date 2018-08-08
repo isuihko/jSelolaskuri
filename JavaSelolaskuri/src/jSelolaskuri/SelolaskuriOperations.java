@@ -431,6 +431,8 @@ public class SelolaskuriOperations {
     }
     
     // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
+    // Toistaiseksi tulokissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
+    // pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
     public int SelvitaTulos(String s)
     {
         int tulos = Vakiot.TULOS_MAARITTELEMATON;

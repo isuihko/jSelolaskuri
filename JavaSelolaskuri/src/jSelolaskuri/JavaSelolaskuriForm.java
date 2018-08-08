@@ -87,12 +87,14 @@ import javax.swing.JFrame;
  *              - Estetty ikkunan koon muuttaminen: Design->Properties->Resizable-ruksi pois.
  *              - Versiopvm 2.8.2018 -> GitHub jSelolaskuri
  * 
- * 4.8.2018     - Syöte voidaan antaa CSV (comma-separated values) eli pilkulla erotettuna listana
+ * 4.-5.8.2018  - Syöte voidaan antaa CSV (comma-separated values) eli pilkulla erotettuna listana
  *                vastustajat-kenttään. Listassa 2, 3, 4 tai 5 merkkijonoa, ks. HaeSyotteetLomakkeelta()
  *                Myös uusi virheilmoitus, jos CSV-formaatissa liikaa pilkkuja.
  *              - Muutama yksikkötesti CSV-formaatin testaamiseen
  *              - Tarkistetaan syötteen haussa, onko vastustajanSelo_jComboBox.getSelectedItem() null.
  *
+ * 8.8.2018     - vastustajanSelo_jComboBox:n alustukset ikkunakaappauksien ottoa varten (oletuksena ei käännetä)
+ *              - lomakkeen teksteihin muutoksia ja vastustajanSelo-kenttään ohje Enter=laskenta
  * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
@@ -102,7 +104,7 @@ import javax.swing.JFrame;
  */
 
 
-// Esimerkkitapauksia:
+// Esimerkkitapauksia (ks. laskentaesimerkkejä myös Yksikkotestit.java)
 //
 // Pikashakin laskenta turnauksesta
 //      Miettimiaika     : enint. 10 min
@@ -169,7 +171,24 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                     }                   
                 }
             }             
-        });           
+        });
+        
+        /*
+        // Add some data (uncomplete and complete) to help running couple of test cases for window captures
+        vastustajanSelo_jComboBox.addItem("");
+        
+        vastustajanSelo_jComboBox.addItem("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        // Also Miettimisaika enint. 10 min, nykyinen SELO 1996, pelimäärä tyhjä
+        vastustajanSelo_jComboBox.addItem("10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");  
+                        
+        vastustajanSelo_jComboBox.addItem("90,1525,0,+1525 +1441 -1973 +1718 -1784 -1660 -1966");        
+        // Also Miettimisaika väh. 90 min, nykyinen SELO 1525, pelimäärä 0
+        vastustajanSelo_jComboBox.addItem("+1525 +1441 -1973 +1718 -1784 -1660 -1966");
+                
+        vastustajanSelo_jComboBox.addItem("90,1683,2,1973,0");
+        // Also Miettimisaika väh. 90 min, nykyinen SELO 1683, pelimäärä 2, ottelun tulos 0=tappio
+        vastustajanSelo_jComboBox.addItem("1973");
+        */
     }
     
       
@@ -237,7 +256,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(1024, 1024));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -245,11 +263,11 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        OmaVahvuusluku_teksti.setText("Nykyinen SELO");
+        OmaVahvuusluku_teksti.setText("Oma SELO");
 
         jLabel3.setText("Oma pelimäärä (tyhjä, numero, uudella pelaajalla 0-10)");
 
-        VastustajanVahvuusluku_teksti.setText("Vastustajat:  SELO / SELOt tuloksineen / turnauksen pistemäärä ja SELOt / CSV");
+        VastustajanVahvuusluku_teksti.setText("Vastustajat:  SELO / SELOt tuloksineen / turnauksen pistemäärä ja SELOt / CSV    Enter=laskenta");
 
         jLabel13.setText("Esim. +1725 -1910 =1812 (tai 1812), jossa + voitto, = tai tyhjä tasapeli, - tappio");
 
@@ -283,12 +301,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                                         .addGap(10, 10, 10)
                                         .addComponent(pelimaara_in, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel3)))
-                            .addComponent(VastustajanVahvuusluku_teksti)
                             .addComponent(jLabel5)
                             .addComponent(TuloksetPistemaaranKanssa_teksti)
                             .addComponent(jLabel13))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+                    .addComponent(VastustajanVahvuusluku_teksti, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -335,7 +353,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 5.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 8.8.2018 github.com/isuihko/jSelolaskuri");
 
         tulos_out.setEditable(false);
         tulos_out.setFocusable(false);

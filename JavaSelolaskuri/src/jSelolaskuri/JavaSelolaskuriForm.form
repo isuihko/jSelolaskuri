@@ -67,9 +67,6 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1024, 1024]"/>
-    </Property>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
@@ -194,7 +191,6 @@
                                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Component id="VastustajanVahvuusluku_teksti" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="TuloksetPistemaaranKanssa_teksti" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -202,6 +198,7 @@
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Component id="jLabel2" alignment="0" pref="470" max="32767" attributes="0"/>
+                      <Component id="VastustajanVahvuusluku_teksti" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -239,7 +236,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="OmaVahvuusluku_teksti">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Nykyinen SELO"/>
+            <Property name="text" type="java.lang.String" value="Oma SELO"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="selo_in">
@@ -253,7 +250,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="VastustajanVahvuusluku_teksti">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Vastustajat:  SELO / SELOt tuloksineen / turnauksen pistem&#xe4;&#xe4;r&#xe4; ja SELOt / CSV"/>
+            <Property name="text" type="java.lang.String" value="Vastustajat:  SELO / SELOt tuloksineen / turnauksen pistem&#xe4;&#xe4;r&#xe4; ja SELOt / CSV    Enter=laskenta"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel13">
@@ -321,7 +318,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Java 5.8.2018 github.com/isuihko/jSelolaskuri"/>
+        <Property name="text" type="java.lang.String" value="Java 8.8.2018 github.com/isuihko/jSelolaskuri"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel5">

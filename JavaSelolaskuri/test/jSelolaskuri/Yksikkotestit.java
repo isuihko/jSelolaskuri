@@ -39,7 +39,8 @@ public class Yksikkotestit {
     Testitulokset t;
     
     /**
-     * Test of getMiettimisaika method, of class Syotetiedot.
+     * Laskennan testauksia erilaisin syöttein (oma selo, vastustajat, ottelutulokset, ...)
+     * Virhestatuksien testauksia erilaisin virhein
      */
     @Test
     public void UudenPelaajanOttelutYksittain() {
