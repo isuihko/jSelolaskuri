@@ -9,6 +9,8 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop applic
 
 4.8.2018 Added support for CSV format with 2-5 values. E.g. with two values can give own selo,matches e.g. 1712,2.5 1525 1600 1611 1558
 
+8.8.2018 Small modifications to form, e.g. instruction that Enter calculates in vastustajanSelo field. Version date 8.8.2018.
+
 ------
 
 Shakin vahvuusluvun laskenta
@@ -16,7 +18,7 @@ Shakin vahvuusluvun laskenta
 30.11.2017 - 4.8.2018 Java, NetBeans IDE 8.2
 
 - 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
-- Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat (paitsi nyt Java-versiossa on CSV, joka vielä muuttuu C#:sta)
+- Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat
 
 Lataaminen: Suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) git clone https://github.com/isuihko/jSelolaskuri
 
