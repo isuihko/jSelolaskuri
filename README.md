@@ -11,11 +11,13 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop applic
 
 8.8.2018 Small modifications to form, e.g. instruction that Enter calculates in vastustajanSelo field. Version date 8.8.2018.
 
+12.8.2018 Edit menu with cut/copy/paste. Can copy to and paste from clipboard opponents/results field.
+
 ------
 
 Shakin vahvuusluvun laskenta
 
-30.11.2017 - 4.8.2018 Java, NetBeans IDE 8.2
+30.11.2017 - 12.8.2018 Java, NetBeans IDE 8.2
 
 - 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
 - Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat
