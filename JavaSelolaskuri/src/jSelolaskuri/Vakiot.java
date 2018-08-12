@@ -38,6 +38,9 @@ public class Vakiot {
     
     static final int PELIMAARA_TYHJA         = -1; // OK, muilla kuin uusilla pelaajilla voi olla tyhjä
         
+    static final int LEIKEKIRJA_MAX_RIVINPITUUS    = 1000;
+    static final int LEIKEKIRJA_MAX_RIVIMAARA      = 100;
+    
     // Tallenna tulokset kokonaislukuina. Laskennassa käytetään 0, 1/2 ja 1.
     // voisi käyttää myös enum
     static final int TULOS_MAARITTELEMATON  = -1;

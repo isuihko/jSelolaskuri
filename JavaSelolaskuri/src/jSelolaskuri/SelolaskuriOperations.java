@@ -73,6 +73,10 @@ public class SelolaskuriOperations {
     // Virhetilanteet:
     //    Kenttiä tarkistetaan yo. järjestyksessä ja lopetetaan, kun kohdataan ensimmäinen virhe.
     //    Palautetaan tarkka virhestatus ja virheilmoitukset näytetään ylemmällä tasolla.
+    //
+    // XXX: Java: syöte ",,,," antaa virheilmoituksen virheellisestä omasta selosta
+    // XXX: C#: syöte ",,,," antaa virheilmoituksen virheellisestä miettimisajasta CSV-formaatissa
+    // XXX: Onko eroa split-toiminnossa?
     //   
     public int TarkistaSyote(Syotetiedot syotteet)
     {
@@ -415,7 +419,10 @@ public class SelolaskuriOperations {
         
         try {
             aika = Integer.parseInt(s);
-            if (aika <= Vakiot.MIETTIMISAIKA_ENINT_10MIN)
+            if (aika < 1) {
+                // ei voida pelata ilman miettimisaikaa
+                aika = Vakiot.MIETTIMISAIKA_MAARITTELEMATON;
+            } else if (aika <= Vakiot.MIETTIMISAIKA_ENINT_10MIN)
                 aika = Vakiot.MIETTIMISAIKA_ENINT_10MIN;
             else if (aika <= Vakiot.MIETTIMISAIKA_11_59MIN)
                 aika = Vakiot.MIETTIMISAIKA_11_59MIN;
@@ -431,7 +438,7 @@ public class SelolaskuriOperations {
     }
     
     // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
-    // Toistaiseksi tulokissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
+    // Toistaiseksi tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
     // pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
     public int SelvitaTulos(String s)
     {

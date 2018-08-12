@@ -8,13 +8,17 @@ package jSelolaskuri;
 
 import javax.swing.JOptionPane; // JOptionPane.showMessageDialog
 import java.awt.Color; // setForeground(Color.RED) or (Color.BLACK)
-import java.awt.Font;
 import java.awt.event.KeyAdapter;   // KeyAdapter()
-import java.awt.font.TextAttribute;
-import java.util.Collections;
 import java.awt.event.KeyEvent;  // KeyEvent.VK_UP   .VK_DOWN
 import javax.swing.JFrame;
 
+// Leikekirjan käsittely:
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
  *
@@ -96,6 +100,21 @@ import javax.swing.JFrame;
  * 8.8.2018     - vastustajanSelo_jComboBox:n alustukset ikkunakaappauksien ottoa varten (oletuksena ei käännetä)
  *              - lomakkeen teksteihin muutoksia ja vastustajanSelo-kenttään ohje Enter=laskenta
  * 
+ * 12.8.2018    - vastustajanSelo-kentässä voidaan antaa komentoja. Tarkistus enterin painalluksen jälkeen.
+ *                  clear - nollaa kaiken syötteen ja tulosteen
+ *                  test  - tallentaa vastustajanSelo_comboBox:iin testidataa ikkunakaappauksien ottoa varten
+ *              - Valikko Edit, jossa cut tyhjentää vastustaja-historian, copy kopioi vastustajat leikekirjaan
+ *                ja paste kopioi tekstin leikekirjasta vastustaja-historiaan.
+ *                Pastessa vain tarkistukset, että pituus on vähintään seloluvun pituus (eli 4) eikä ole yli 1000 merkkiä.
+ *                rivin pitää alkaa sallitulla merkillä (numero tai tulos +-=).  Ei saa olla kahta samaa riviä.
+ *                Rajoitettu lisättävien rivin lkm (vakio, jonka arvo nyt 100).
+ *              - Lisätty virheilmoitus virheelliselle miettimisajalla, joka on mahdollinen (vain) CSV-formaatissa,
+ *                kun voidaan antaa miettimisaika (minuutit) numerona
+ *              - vastustajanSelo: Horizontal Size = 475, Auto Rezising ja Horizontal Resizable pois päältä,
+ *                koska kentästä saattoi tulla Pastea käytettäessä leveämpi kuin ikkuna
+ *              - Muutettu menun otsikko: File -> Menu
+ * 
+ * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
  *        aina kun keksin, miten asioita kannattaa tehdä.
@@ -156,39 +175,10 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-
-                    // Suorita laskenta, kun painettu Enter jComboBox-kentässä
-                    if (LaskeOttelunTulosLomakkeelta()) {
-                        // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
-                        // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
-                        // HUOM! Tämä sama koodi on myös Laske-painikkeen käsittelyssä
-                        String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
-                        vastustajanSelo_jComboBox.setSelectedIndex(-1);            
-                        vastustajanSelo_jComboBox.setSelectedItem(s);
-                        if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
-                            vastustajanSelo_jComboBox.addItem(s);
-                        }               
-                    }                   
+                    vastustajanSelo_jComboBox_KasitteleEnter();
                 }
             }             
         });
-        
-        /*
-        // Add some data (uncomplete and complete) to help running couple of test cases for window captures
-        vastustajanSelo_jComboBox.addItem("");
-        
-        vastustajanSelo_jComboBox.addItem("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
-        // Also Miettimisaika enint. 10 min, nykyinen SELO 1996, pelimäärä tyhjä
-        vastustajanSelo_jComboBox.addItem("10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");  
-                        
-        vastustajanSelo_jComboBox.addItem("90,1525,0,+1525 +1441 -1973 +1718 -1784 -1660 -1966");        
-        // Also Miettimisaika väh. 90 min, nykyinen SELO 1525, pelimäärä 0
-        vastustajanSelo_jComboBox.addItem("+1525 +1441 -1973 +1718 -1784 -1660 -1966");
-                
-        vastustajanSelo_jComboBox.addItem("90,1683,2,1973,0");
-        // Also Miettimisaika väh. 90 min, nykyinen SELO 1683, pelimäärä 2, ottelun tulos 0=tappio
-        vastustajanSelo_jComboBox.addItem("1973");
-        */
     }
     
       
@@ -212,12 +202,13 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         vastustajanSelo_jComboBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         laskeUusiSelo_btn = new javax.swing.JButton();
         kaytaUutta_btn = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        tulos_out = new javax.swing.JTextField();
+        turnauksenTulos_out = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         keskivahvuus_out = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
@@ -243,17 +234,19 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         vaihteluvali_out = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        uusi_pelimaara_out = new javax.swing.JTextField();
+        uusiPelimaara_out = new javax.swing.JTextField();
         UudenPelaajanLaskenta_txt = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuBar = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        ohjeita_jMenuItem = new javax.swing.JMenuItem();
+        laskentakaavat_jMenuItem = new javax.swing.JMenuItem();
+        tietoaOhjelmasta_jMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        suljeOhjelma_jMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        cutVastustajat_jMenuItem = new javax.swing.JMenuItem();
+        copyVastustajat_jMenuItem = new javax.swing.JMenuItem();
+        pasteVastustajat_jMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -271,13 +264,16 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
 
         jLabel13.setText("Esim. +1725 -1910 =1812 (tai 1812), jossa + voitto, = tai tyhjä tasapeli, - tappio");
 
-        TuloksetPistemaaranKanssa_teksti.setText("Tai pistemäärä ja vastustajien SELOt: 1.5 1725 1910 1812");
+        TuloksetPistemaaranKanssa_teksti.setText("Tai pistemäärä ja vastustajien vahvuusluvut: 1.5 1725 1910 1812");
 
         jLabel5.setText("Jos annettu yksi vahvuusluku numerona (esim. 1720), niin tuloksen valinta:");
 
         vastustajanSelo_jComboBox.setEditable(true);
+        vastustajanSelo_jComboBox.setMaximumRowCount(10);
 
         jLabel2.setText("CSV: min,selo,pelimaara,vastustajat[,tulos] tai selo,vastustajat. Esim. 1650,+1725 -1910 1812");
+
+        jLabel7.setText("Huom! CSV:ssä annetut arvot ohittavat muut (miettimisaika,vahvuusluku,pelimäärä)");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -286,7 +282,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(vastustajanSelo_jComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(vastustajanSelo_jComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(VastustajanVahvuusluku_teksti, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
@@ -303,10 +301,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                                     .addComponent(jLabel3)))
                             .addComponent(jLabel5)
                             .addComponent(TuloksetPistemaaranKanssa_teksti)
-                            .addComponent(jLabel13))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-                    .addComponent(VastustajanVahvuusluku_teksti, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel13)
+                            .addComponent(jLabel7))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -329,7 +326,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addComponent(TuloksetPistemaaranKanssa_teksti)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addGap(6, 6, 6))
         );
@@ -353,10 +352,10 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 8.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 12.8.2018 github.com/isuihko/jSelolaskuri");
 
-        tulos_out.setEditable(false);
-        tulos_out.setFocusable(false);
+        turnauksenTulos_out.setEditable(false);
+        turnauksenTulos_out.setFocusable(false);
 
         jLabel16.setText("Ottelun/turnauksen tulos");
 
@@ -387,7 +386,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(keskivahvuus_out, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-                    .addComponent(tulos_out))
+                    .addComponent(turnauksenTulos_out))
                 .addGap(41, 41, 41)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
@@ -406,7 +405,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel16)
-                        .addComponent(tulos_out, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(turnauksenTulos_out, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel10)
                         .addComponent(odotustulos_out, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -583,8 +582,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
 
         jLabel8.setText("Uusi pelimäärä");
 
-        uusi_pelimaara_out.setEditable(false);
-        uusi_pelimaara_out.setFocusable(false);
+        uusiPelimaara_out.setEditable(false);
+        uusiPelimaara_out.setFocusable(false);
 
         UudenPelaajanLaskenta_txt.setText("Uuden pelaajan laskenta");
         UudenPelaajanLaskenta_txt.setFocusable(false);
@@ -596,7 +595,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(uusi_pelimaara_out, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(uusiPelimaara_out, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(UudenPelaajanLaskenta_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -606,54 +605,75 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(uusi_pelimaara_out, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(uusiPelimaara_out, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(UudenPelaajanLaskenta_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 3, Short.MAX_VALUE))
         );
 
         jMenuBar1.setMaximumSize(new java.awt.Dimension(56, 21));
 
-        jMenuBar.setText("File");
+        jMenuBar.setText("Menu");
 
-        jMenuItem1.setText("Ohjeita");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        ohjeita_jMenuItem.setText("Ohjeita");
+        ohjeita_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                ohjeita_jMenuItemActionPerformed(evt);
             }
         });
-        jMenuBar.add(jMenuItem1);
+        jMenuBar.add(ohjeita_jMenuItem);
 
-        jMenuItem2.setText("Laskentakaavat");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        laskentakaavat_jMenuItem.setText("Laskentakaavat");
+        laskentakaavat_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                laskentakaavat_jMenuItemActionPerformed(evt);
             }
         });
-        jMenuBar.add(jMenuItem2);
+        jMenuBar.add(laskentakaavat_jMenuItem);
 
-        jMenuItem3.setText("Tietoja ohjelmasta");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        tietoaOhjelmasta_jMenuItem.setText("Tietoa ohjelmasta");
+        tietoaOhjelmasta_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                tietoaOhjelmasta_jMenuItemActionPerformed(evt);
             }
         });
-        jMenuBar.add(jMenuItem3);
+        jMenuBar.add(tietoaOhjelmasta_jMenuItem);
         jMenuBar.add(jSeparator1);
 
-        jMenuItem4.setText("Sulje ohjelma");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+        suljeOhjelma_jMenuItem.setText("Sulje ohjelma");
+        suljeOhjelma_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
+                suljeOhjelma_jMenuItemActionPerformed(evt);
             }
         });
-        jMenuBar.add(jMenuItem4);
+        jMenuBar.add(suljeOhjelma_jMenuItem);
 
         jMenuBar1.add(jMenuBar);
 
         jMenu2.setText("Edit");
 
-        jMenuItem5.setText("Cut, Copy & Paste not implemented yet");
-        jMenu2.add(jMenuItem5);
+        cutVastustajat_jMenuItem.setText("Cut (kopioi ja tyhjentää Vastustajat-historian)");
+        cutVastustajat_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cutVastustajat_jMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(cutVastustajat_jMenuItem);
+
+        copyVastustajat_jMenuItem.setText("Copy (kopioi Vastustajat-historian)");
+        copyVastustajat_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                copyVastustajat_jMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(copyVastustajat_jMenuItem);
+
+        pasteVastustajat_jMenuItem.setText("Paste (täyttää Vastustajat-historian, ei tarkistusta)");
+        pasteVastustajat_jMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pasteVastustajat_jMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(pasteVastustajat_jMenuItem);
 
         jMenuBar1.add(jMenu2);
 
@@ -663,10 +683,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel12)
-                .addGap(3, 3, 3))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -684,7 +700,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                                 .addGap(59, 59, 59)
                                 .addComponent(jLabel1))
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(92, 92, 92)
                                 .addComponent(laskeUusiSelo_btn))
@@ -692,7 +707,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(70, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel12)))
+                .addGap(3, 3, 3))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -860,6 +882,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             case Vakiot.SYOTE_STATUS_OK:
                 break;
   
+            case Vakiot.SYOTE_VIRHE_MIETTIMISAIKA:
+                JOptionPane.showMessageDialog(null,
+                        "VIRHE: CSV-formaatissa annettu virheellinen miettimisaika. Annettava minuutit. Ks. Menu->Ohjeita",
+                        "VIRHE",
+                        JOptionPane.WARNING_MESSAGE);
+                vastustajanSelo_jComboBox.requestFocus();
+                break;
+                
             case Vakiot.SYOTE_VIRHE_OMA_SELO:
                 selo_in.setForeground(Color.RED);
                 JOptionPane.showMessageDialog(null,
@@ -880,8 +910,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                     "VIRHE",
                     JOptionPane.WARNING_MESSAGE);          
                 vastustajanSelo_jComboBox.setForeground(Color.BLACK);   // palauta väri                
-               vastustajanSelo_jComboBox.requestFocus();
-
+                vastustajanSelo_jComboBox.requestFocus();
                 break;
                 
             case Vakiot.SYOTE_VIRHE_PELIMAARA:
@@ -925,7 +954,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 
             case Vakiot.SYOTE_VIRHE_CSV_FORMAT:
                 JOptionPane.showMessageDialog(null,
-                        "CSV-formaattivirhe, ks. File->Ohjeita",
+                        "CSV-formaattivirhe, ks. Menu->Ohjeita",
                         "VIRHE",
                         JOptionPane.WARNING_MESSAGE);                
                 vastustajanSelo_jComboBox.requestFocus();
@@ -983,9 +1012,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
        
         //   uusi pelimäärä tai tyhjä
         if (tulokset.getUusiPelimaara() >= 0)
-            uusi_pelimaara_out.setText(Integer.toString(tulokset.getUusiPelimaara()));
+            uusiPelimaara_out.setText(Integer.toString(tulokset.getUusiPelimaara()));
         else
-            uusi_pelimaara_out.setText("");
+            uusiPelimaara_out.setText("");
         
         // piste-ero turnauksen keskivahvuuteen nähden
         String tempstr = Integer.toString(Math.abs(tulokset.AlkuperainenSelo() - tulokset.getTurnauksenKeskivahvuus()));
@@ -995,7 +1024,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         keskivahvuus_out.setText(Integer.toString(tulokset.getTurnauksenKeskivahvuus()));
         
         // Turnauksen loppupisteet yhdellä desimaalilla / ottelujen lkm, esim.  2.5 / 6 tai 2.0 / 6
-        tulos_out.setText(
+        turnauksenTulos_out.setText(
                 Float.toString(tulokset.getTurnauksenTulos() / 2F) + " / " + Integer.toString(tulokset.getVastustajienLkm()));
                
         // Vahvuusluku on voinut vaihdella laskennan edetessä, jos vastustajat ovat olleet formaatissa "+1622 -1880 =1633"
@@ -1037,30 +1066,29 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_PELOKSI);
             else
                 vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_SELOKSI);
-        //}
-        
-        
+        //}              
     }
     
     
     // --------------------------------------------------------------------------------
     // Miettimisajan valinnan mukaan tekstit: SELO (pidempi peli) vai PELO (pikashakki)
+    //
+    // XXX: Hm... onko liian monta vaihdettavaa otsikkokenttää? Esim. Laske uusi SELO -> Laske uusi vahvuusluku
     // --------------------------------------------------------------------------------
     private void vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum suunta)
     {
         String alkup, uusi;
-
-        Font font = TuloksetPistemaaranKanssa_teksti.getFont();
+        //Font font = TuloksetPistemaaranKanssa_teksti.getFont();
         
         if (suunta == Vakiot.VaihdaMiettimisaika_enum.VAIHDA_SELOKSI)
         {
             alkup = "PELO";
             uusi = "SELO";
             
-            font = font.deriveFont(
-                Collections.singletonMap(
-                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
-            TuloksetPistemaaranKanssa_teksti.setFont(font);                        
+            //font = font.deriveFont(
+            //    Collections.singletonMap(
+            //        TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR));
+            //TuloksetPistemaaranKanssa_teksti.setFont(font);                        
         }
         else
         {
@@ -1068,15 +1096,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             uusi = "PELO";
 
             // korosta PELO-ohje
-            font = font.deriveFont(
-                Collections.singletonMap(
-                    TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
-            TuloksetPistemaaranKanssa_teksti.setFont(font);
+            //font = font.deriveFont(
+            //    Collections.singletonMap(
+            //        TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD));
+            //TuloksetPistemaaranKanssa_teksti.setFont(font);
         }
 
         OmaVahvuusluku_teksti.setText(OmaVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
         VastustajanVahvuusluku_teksti.setText(VastustajanVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
-        TuloksetPistemaaranKanssa_teksti.setText(TuloksetPistemaaranKanssa_teksti.getText().replaceAll(alkup, uusi));
         UusiSELO_teksti.setText(UusiSELO_teksti.getText().replaceAll(alkup, uusi));
         laskeUusiSelo_btn.setText(laskeUusiSelo_btn.getText().replaceAll(alkup, uusi));
         kaytaUutta_btn.setText(kaytaUutta_btn.getText().replaceAll(alkup, uusi));
@@ -1205,9 +1232,101 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         LaskeOttelunTulosLomakkeelta();
     }//GEN-LAST:event_tulosTasapeli_btnKeyPressed
 
+    
+    private void TyhjennaVastustajat()
+    {
+        vastustajanSelo_jComboBox.removeAllItems();      
+    }
+    
+    // vastustajanSelo-kentässä clear ja Enter, niin tyhjennetään syötteet ja tuloskentät
+    //
+    // tyhjentää lomakkeen kentät ja palauttaa alkuarvot, miettimisaika vähintään 90 min, ei tulospainikkeita valittuna
+    private void TyhjennaSyotteet()
+    {
+        selo_in.setText("");
+        pelimaara_in.setText("");
+        
+        miettimisaika_vah90_btn.setSelected(true);
+        miettimisaika_60_89_btn.setSelected(false);
+        miettimisaika_11_59_btn.setSelected(false);
+        miettimisaika_enint10_btn.setSelected(false);
+        
+        tulosVoitto_btn.setSelected(false);
+        tulosTasapeli_btn.setSelected(false);
+        tulosTappio_btn.setSelected(false);
+        
+        TyhjennaVastustajat();
+    }
+    
+    private void TyhjennaTuloskentat()
+    {
+        uusiSelo_out.setText("");
+        selomuutos_out.setText("");
+        vaihteluvali_out.setText("");
+
+        uusiPelimaara_out.setText("");
+        turnauksenTulos_out.setText("");
+        odotustulos_out.setText("");
+        keskivahvuus_out.setText("");                
+        pisteEro_out.setText("");
+    }
+          
+    private void TallennaTestaustaVartenVastustajia()
+    {
+        TyhjennaVastustajat();
+        
+        // Add some data (uncomplete and complete) to help running couple of test cases for window captures
+        vastustajanSelo_jComboBox.addItem("");  // to be shown first!
+        
+        vastustajanSelo_jComboBox.addItem("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        // Also Miettimisaika enint. 10 min, nykyinen SELO 1996, pelimäärä tyhjä
+        vastustajanSelo_jComboBox.addItem("10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");  
+                        
+        vastustajanSelo_jComboBox.addItem("90,1525,0,+1525 +1441 -1973 +1718 -1784 -1660 -1966");        
+        // Also Miettimisaika väh. 90 min, nykyinen SELO 1525, pelimäärä 0
+        vastustajanSelo_jComboBox.addItem("+1525 +1441 -1973 +1718 -1784 -1660 -1966");
+                
+        vastustajanSelo_jComboBox.addItem("90,1683,2,1973,0");
+        // Also Miettimisaika väh. 90 min, nykyinen SELO 1683, pelimäärä 2, ottelun tulos 0=tappio
+        vastustajanSelo_jComboBox.addItem("1973");
+        }
+    
+    private void vastustajanSelo_jComboBox_KasitteleEnter()
+    {
+        String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+        
+        if (s.equals("clear")) {
+            // Huom! Jättää muistiin aiemmin lasketut vahvuusluvun ja pelimäärän, jolloin
+            // painike Käytä uutta SELOa jatkolaskennassa voi hakea ne (ei siis palauta 1525,0)
+            TyhjennaSyotteet();
+            TyhjennaTuloskentat();
+
+            // palauta tekstit
+            vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_SELOKSI);
+            return;
+            
+        } else if (s.equals("test")) {
+            // testauksen helpottamista varten vastustajien tietoja
+            TallennaTestaustaVartenVastustajia();
+            return;
+        }
+        
+        // Suorita laskenta, kun painettu Enter jComboBox-kentässä
+        if (LaskeOttelunTulosLomakkeelta()) {
+            // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
+            // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
+            // HUOM! Tämä sama koodi on myös Laske-painikkeen käsittelyssä
+            // String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+            vastustajanSelo_jComboBox.setSelectedIndex(-1);            
+            vastustajanSelo_jComboBox.setSelectedItem(s);
+            if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
+                vastustajanSelo_jComboBox.addItem(s);
+            }               
+        }       
+    }
 
     // --------------------------------------------------------------------------------
-    // File-Menu
+    // Menu
     // --------------------------------------------------------------------------------
     //    Ohjeita
     //    Laskentakaavat
@@ -1215,7 +1334,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     //    Sulje ohjelma
     
     // MenuItem: Ohjeita    
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void ohjeita_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ohjeita_jMenuItemActionPerformed
         // TODO add your handling code here
         String infoMessage = "Shakin vahvuusluvun laskenta SELO ja PELO"
                 + "\r\n"
@@ -1224,36 +1343,37 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "\r\n" + "-Miettimisaika. Pitkä peli (väh. 90 minuuttia) on oletuksena. Jos valitset enint. 10 minuuttia, lasketaan pikashakin vahvuuslukua (PELO)"
                 + "\r\n" + "-Oma vahvuusluku"
                 + "\r\n" + "-Oma pelimäärä, joka tarvitaan vain jos olet pelannut enintään 10 peliä. Tällöin käytetään uuden pelaajan laskentakaavaa."
-                + "\r\n" + "-Vastustajien vahvuusluvut ja tulokset jollakin kolmesta tavasta:"
+                + "\r\n" + "-Vastustajien vahvuusluvut ja tulokset jollakin neljästä tavasta:"
                 + "\r\n" + "   1) Yhden vastustajan vahvuusluku (esim. 1922) ja lisäksi ottelun tulos 1/0,5/0 nuolinäppäimillä tai hiirellä. Laskennan tulos päivittyy valinnan mukaan."
                 + "\r\n" + "   2) Vahvuusluvut tuloksineen, esim. +1525 =1600 -1611 +1558, jossa + voitto, = tasan ja - tappio"
                 + "\r\n" + "   3) Turnauksen pistemäärä ja vastustajien vahvuusluvut, esim. 2.5 1525 1600 1611 1558"
-                + "\r\n" + "   4) CSV eli pilkulla erotettu lista, jossa 2, 3, 4 tai 5 kenttää: HUOM! Käytä tuloksissa desimaalipistettä, esim. 0.5 tai 10.5!"
+                + "\r\n" + "   4) CSV eli pilkulla erotetut arvot, jossa 2, 3, 4 tai 5 kenttää: HUOM! Käytä tuloksissa desimaalipistettä, esim. 0.5 tai 10.5!"
                 + "\r\n" + "           2: oma selo,ottelut   esim. 1712,2.5 1525 1600 1611 1558 tai 1712,+1525"
                 + "\r\n" + "           3: oma selo,pelimaara,ottelut esim. 1525,0,+1525 +1441"
                 + "\r\n" + "           4: minuutit,oma selo,pelimaara,ottelut  esim. 90,1525,0,+1525 +1441"
                 + "\r\n" + "           5: minuutit,oma selo,pelimaara,ottelu,tulos esim. 90,1683,2,1973,0 (jossa tasapeli 1/2 tai 0.5)"
                 + "\r\n" + "      Jos miettimisaika on antamatta, käytetään ikkunasta valittua"
                 + "\r\n" + "      Jos pelimäärä on antamatta, käytetään tyhjää"
+                + "\r\n" + "   HUOM! CSV-formaatissa annettuja arvoja käytetään, vaikka oma selo, pelimäärä, miettimisaika tai tulos olisi annettu erikseenkin."
                 + "\r\n"
                 + "\r\n" + "Laskenta suoritetaan klikkaamalla laskenta-painiketta tai painamalla Enter vastustajan SELO-kentässä sekä (jos yksi vastustaja) tuloksen valinta -painikkeilla."
                 + "\r\n"
                 + "\r\n" + "Jos haluat jatkaa laskentaa uudella vahvuusluvulla, klikkaa Käytä uutta SELOa jatkolaskennassa. Jos ei ole vielä ollut laskentaa, saadaan uuden pelaajan oletusarvot SELO 1525 ja pelimäärä 0.";
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: Ohjeita", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_ohjeita_jMenuItemActionPerformed
                                 
 
     // MenuItem: Laskentakaavat
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void laskentakaavat_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_laskentakaavat_jMenuItemActionPerformed
         // TODO add your handling code here:
         String infoMessage = "Shakin vahvuusluvun laskentakaavat: http://skore.users.paivola.fi/selo.html"
                 + " \r\n"
                 + "Lisätietoa: http://www.shakkiliitto.fi/ ja http://www.shakki.net/cgi-bin/selo";
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: Laskentakaavat", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_laskentakaavat_jMenuItemActionPerformed
 
     // MenuItem: Tietoja ohjelmasta
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void tietoaOhjelmasta_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tietoaOhjelmasta_jMenuItemActionPerformed
         // TODO add your handling code here:
         String infoMessage = "Shakin vahvuusluvun laskenta"
                 + " \r\n"
@@ -1261,12 +1381,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + " \r\n"
                 + "Myös C#: https://github.com/isuihko/selolaskuri";
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: Tietoa ohjelmasta", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_tietoaOhjelmasta_jMenuItemActionPerformed
 
     // Lopetuksen varmistaminen
-    //      Valittu File->Sulje ohjelma -> Application.Exit()
+    //      Valittu Menu->Sulje ohjelma -> Application.Exit()
     // Sama toiminta kuin formWindowClosing(java.awt.event.WindowEvent evt)
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void suljeOhjelma_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {                                           
         int vastaus = JOptionPane.showConfirmDialog(null, 
                 "Haluatko poistua ohjelmasta?"); // Yes, No, Cancel
         if (vastaus == JOptionPane.YES_OPTION)
@@ -1283,7 +1403,107 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             JavaSelolaskuriForm.this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
+    
+    // --------------------------------------------------------------------------------
+    // Edit
+    // --------------------------------------------------------------------------------
+    //    Cut
+    //    Copy
+    //    Paste
+    //
+    // Edit-menu käsittelee vastustajanSelo-kentän listaa eli historiatietoja
 
+    // Tyhjentää Vastustajat-historiatiedot   
+    private void cutVastustajat_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutVastustajat_jMenuItemActionPerformed
+        // At first copy into clipboard
+        copyVastustajat_jMenuItemActionPerformed(evt);
+        TyhjennaVastustajat();        
+    }//GEN-LAST:event_cutVastustajat_jMenuItemActionPerformed
+
+    // Kopioi leikekirjaan Vastustajat-historian
+    private void copyVastustajat_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyVastustajat_jMenuItemActionPerformed
+        String leikekirja = "";
+        int size = vastustajanSelo_jComboBox.getItemCount();
+        
+        for (int i = 0; i < size; i++) {
+            String s = vastustajanSelo_jComboBox.getItemAt(i);
+            if (s.length() > 0)  // will skip possible empty 1st entry
+                leikekirja += vastustajanSelo_jComboBox.getItemAt(i) + "\r\n";
+        }
+        
+        StringSelection selection = new StringSelection(leikekirja);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+    }//GEN-LAST:event_copyVastustajat_jMenuItemActionPerformed
+
+    // Kopioi leikekirjasta Vastustajat-historiaan tekstirivit
+    //
+    // Ei tarkisteta, että ovatko vastustajat/tulokset oikeassa formaatissa.
+    // Vain tarkistukset, että pituus on vähintään seloluvun pituus (eli 4), eikä tule kahta samaa riviä.
+    // Ei saa olla myöskään liian pitkä rivi eikä liian montaa riviä.
+    private void pasteVastustajat_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteVastustajat_jMenuItemActionPerformed
+        // Haetaan data leikekirjasta
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Clipboard clipboard = toolkit.getSystemClipboard();
+        String leikekirjaData = "";
+        String[] leikekirja = null ;
+        int lisatytRivit = 0;
+        
+        try {
+            leikekirjaData = (String) clipboard.getData(DataFlavor.stringFlavor);
+        } catch (UnsupportedFlavorException ex) {
+            // Logger.getLogger(JavaSelolaskuriForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            // Logger.getLogger(JavaSelolaskuriForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // jos leikekirjassa on tekstiä, niin poista aiemmat vastustajat,
+        // käsittele riveittäin, tarkista ja tallenna vastustajanSelo-kenttään
+        if (!leikekirjaData.isEmpty()) {
+
+            // Ei tallenneta liian pitkiä tai lyhyitä rivejä, eikä liian montaa riviä, eikä samaa riviä kahdesti.
+            // Rivin on aloitettava numerolla (eli selo tai miettimisaika) tai ottelutuloksella (+, - tai =)
+            leikekirja = leikekirjaData.split("\n");
+            for (String rivi : leikekirja) {
+                String rivi2 = rivi.trim();
+
+                if (rivi2.length() >= Vakiot.SELO_PITUUS && rivi2.length() <= Vakiot.LEIKEKIRJA_MAX_RIVINPITUUS &&
+                   (rivi2.charAt(0) == '+' || rivi2.charAt(0) == '-' || rivi2.charAt(0) == '=' || (rivi2.charAt(0) >= '0' && rivi2.charAt(0) <= '9')))
+                {
+                    vastustajanSelo_jComboBox.setSelectedIndex(-1);
+                    vastustajanSelo_jComboBox.setSelectedItem(rivi2);
+                    if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
+                        if (lisatytRivit == 0) {
+                            TyhjennaVastustajat();
+                            vastustajanSelo_jComboBox.addItem("");  // XXX:  to be shown first! (not counted)
+                        }
+                        vastustajanSelo_jComboBox.addItem(rivi2);
+                        if (++lisatytRivit >= Vakiot.LEIKEKIRJA_MAX_RIVIMAARA)
+                            break;
+                    }
+                }
+            }
+        }
+        
+        if (lisatytRivit > 0 && null != leikekirja) {
+            vastustajanSelo_jComboBox.setSelectedIndex(0);  // XXX: select the empty item
+
+            String message = "Vastustajiin lisätty " + lisatytRivit + (lisatytRivit == 1 ? " rivi. " : " riviä. ")
+                + "Leikekirjassa oli " + leikekirja.length + (leikekirja.length == 1 ? " rivi. " : " riviä. ")
+                + "Lisätään enintään " + Vakiot.LEIKEKIRJA_MAX_RIVIMAARA + " riviä."
+                + "\r\n"
+                + "Huom! Ei tarkistettu, onko kelvollista ottelutietoa. Tarkistettu vain, että rivi alkaa"
+                + "\r\n"
+                + "numerolla tai tuloksella (+-=), rivin pituus on välillä 4 (seloluvun pituus) - " + Vakiot.LEIKEKIRJA_MAX_RIVINPITUUS
+                + "\r\n"
+                + "eikä lisätä samoja rivejä.";
+            JOptionPane.showMessageDialog(null, message, "Clipboard", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Paste: Leikekirjan sisältöä ei hyväksytty. Ei muutettu vastustajia/ottelutietoja.", "Clipboard", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_pasteVastustajat_jMenuItemActionPerformed
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -1330,6 +1550,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     private javax.swing.JLabel UudenPelaajanLaskenta_txt;
     private javax.swing.JLabel UusiSELO_teksti;
     private javax.swing.JLabel VastustajanVahvuusluku_teksti;
+    private javax.swing.JMenuItem copyVastustajat_jMenuItem;
+    private javax.swing.JMenuItem cutVastustajat_jMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -1341,16 +1563,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenuBar;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1361,21 +1579,26 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     private javax.swing.JButton kaytaUutta_btn;
     private javax.swing.JTextField keskivahvuus_out;
     private javax.swing.JButton laskeUusiSelo_btn;
+    private javax.swing.JMenuItem laskentakaavat_jMenuItem;
     private javax.swing.JRadioButton miettimisaika_11_59_btn;
     private javax.swing.JRadioButton miettimisaika_60_89_btn;
     private javax.swing.JRadioButton miettimisaika_enint10_btn;
     private javax.swing.JRadioButton miettimisaika_vah90_btn;
     private javax.swing.JTextField odotustulos_out;
+    private javax.swing.JMenuItem ohjeita_jMenuItem;
+    private javax.swing.JMenuItem pasteVastustajat_jMenuItem;
     private javax.swing.JTextField pelimaara_in;
     private javax.swing.JTextField pisteEro_out;
     private javax.swing.JTextField selo_in;
     private javax.swing.JTextField selomuutos_out;
+    private javax.swing.JMenuItem suljeOhjelma_jMenuItem;
+    private javax.swing.JMenuItem tietoaOhjelmasta_jMenuItem;
     private javax.swing.JRadioButton tulosTappio_btn;
     private javax.swing.JRadioButton tulosTasapeli_btn;
     private javax.swing.JRadioButton tulosVoitto_btn;
-    private javax.swing.JTextField tulos_out;
+    private javax.swing.JTextField turnauksenTulos_out;
+    private javax.swing.JTextField uusiPelimaara_out;
     private javax.swing.JTextField uusiSelo_out;
-    private javax.swing.JTextField uusi_pelimaara_out;
     private javax.swing.JTextField vaihteluvali_out;
     private javax.swing.JComboBox<String> vastustajanSelo_jComboBox;
     // End of variables declaration//GEN-END:variables
