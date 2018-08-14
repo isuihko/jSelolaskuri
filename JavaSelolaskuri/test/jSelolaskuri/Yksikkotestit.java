@@ -5,8 +5,8 @@
  */
 package jSelolaskuri;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+//import org.junit.AfterClass;
+//import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -46,7 +46,7 @@ public class Yksikkotestit {
     public void UudenPelaajanOttelutYksittain() {
             // Testataan uuden pelaajan vahvuusluvun muutokset ottelu kerrallaan.
 
-        t = Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, "1525", "0", "1525", Vakiot.TULOS_VOITTO);
+        t = Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, "1525", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         // Jos pitkä peli, niin jatkossa käytetään lyhyempää muotoa
         // var t = Testaa("1525", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         // jossa miettimisaika on oletuksena MIETTIMISAIKA_VAH_90MIN
@@ -61,7 +61,7 @@ public class Yksikkotestit {
         assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // yksi ottelu, sama kuin UusiSelo
 
         // Ja tästä eteenpäin käytetään edellisestä laskennasta saatuja UusiSelo ja UusiPelimaara
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1441", Vakiot.TULOS_VOITTO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1441", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1683,   t.Item2.getUusiSelo());
         assertEquals(2,      t.Item2.getUusiPelimaara());              // uusi pelimäärä 1+1 = 2
@@ -69,7 +69,7 @@ public class Yksikkotestit {
         assertEquals(1441,   t.Item2.getTurnauksenKeskivahvuus());
         assertEquals(84,     t.Item2.getOdotustulos());               // 0,84*100
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1973", Vakiot.TULOS_TAPPIO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1973", Vakiot.OttelunTulos_enum.TULOS_TAPPIO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1713,   t.Item2.getUusiSelo());
         assertEquals(3,      t.Item2.getUusiPelimaara());
@@ -77,28 +77,28 @@ public class Yksikkotestit {
         assertEquals(1973,   t.Item2.getTurnauksenKeskivahvuus());
         assertEquals(16,     t.Item2.getOdotustulos());               // 0,16*100
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1718", Vakiot.TULOS_VOITTO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1718", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1764,   t.Item2.getUusiSelo());
         assertEquals(4,      t.Item2.getUusiPelimaara());
         assertEquals(1 * 2,  t.Item2.getTurnauksenTulos());
         assertEquals(1718,   t.Item2.getTurnauksenKeskivahvuus());
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1784", Vakiot.TULOS_TAPPIO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1784", Vakiot.OttelunTulos_enum.TULOS_TAPPIO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1728,   t.Item2.getUusiSelo());
         assertEquals(5,      t.Item2.getUusiPelimaara());
         assertEquals(0,      t.Item2.getTurnauksenTulos());
         assertEquals(1784,   t.Item2.getTurnauksenKeskivahvuus());
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1660", Vakiot.TULOS_TAPPIO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1660", Vakiot.OttelunTulos_enum.TULOS_TAPPIO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1683,   t.Item2.getUusiSelo());
         assertEquals(6,      t.Item2.getUusiPelimaara());
         assertEquals(0,      t.Item2.getTurnauksenTulos());
         assertEquals(1660,   t.Item2.getTurnauksenKeskivahvuus());
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1966", Vakiot.TULOS_TAPPIO);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1966", Vakiot.OttelunTulos_enum.TULOS_TAPPIO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1695,   t.Item2.getUusiSelo());
         assertEquals(7,      t.Item2.getUusiPelimaara());
@@ -171,7 +171,7 @@ public class Yksikkotestit {
     @Test
     public void TulosPainikkeilla()
     {
-        t = Testaa("1800", "1900", Vakiot.TULOS_VOITTO);
+        t = Testaa("1800", "1900", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(1823,   t.Item2.getUusiSelo());
         assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
@@ -210,7 +210,7 @@ public class Yksikkotestit {
     @Test
     public void PikashakinVahvuuslukuTurnauksesta()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "1996", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(2033,   t.Item2.getUusiSelo());
         assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
@@ -226,7 +226,7 @@ public class Yksikkotestit {
     @Test
     public void PikashakinVahvuuslukuTurnauksestaPelimaaralla()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "75", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "1996", "75", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(2033,   t.Item2.getUusiSelo());
         assertEquals(87,     t.Item2.getUusiPelimaara());             // 75 + 12 ottelua = 87
@@ -264,14 +264,14 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteOmaSELO()
     {
-        t = Testaa("15zz5", "0", "1525", Vakiot.TULOS_VOITTO);
+        t = Testaa("15zz5", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
     }
 
     @Test
     public void VirheellinenSyoteOmaSELOtyhja()
     {
-        t = Testaa("", "0", "1525", Vakiot.TULOS_VOITTO);
+        t = Testaa("", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
     }
     
@@ -279,14 +279,14 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteVastustajanSELO()
     {
-        t = Testaa("1525", "0", "c5sdffew25", Vakiot.TULOS_VOITTO);
+        t = Testaa("1525", "0", "c5sdffew25", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
     @Test
     public void VirheellinenSyoteVastustajanSELOtyhja()
     {
-        t = Testaa("1525", "0", "", Vakiot.TULOS_VOITTO);
+        t = Testaa("1525", "0", "", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
     
@@ -294,7 +294,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteOmaPelimaara()
     {
-        t = Testaa("1525", "123456", "1525", Vakiot.TULOS_VOITTO);
+        t = Testaa("1525", "123456", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_PELIMAARA, t.Item1);
     }
 
@@ -302,7 +302,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteEiTulosta()
     {
-        t = Testaa("1525", "0", "1600", Vakiot.TULOS_MAARITTELEMATON);
+        t = Testaa("1525", "0", "1600", Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
         assertEquals(Vakiot.SYOTE_VIRHE_BUTTON_TULOS, t.Item1);
     }
 
@@ -310,7 +310,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksessaVirheellinenTulos()
     {
-        t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 /1784 -1660 -1966", Vakiot.TULOS_MAARITTELEMATON);
+        t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 /1784 -1660 -1966", Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
         assertEquals(Vakiot.SYOTE_VIRHE_YKSITTAINEN_TULOS, t.Item1);
     }
 
@@ -318,7 +318,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos1()  
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "20 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa("1996", "20 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
     }
 
@@ -326,7 +326,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos2()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "99 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa("1996", "99 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
     }
 
@@ -336,7 +336,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos3()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa("1996", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
@@ -346,7 +346,7 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos4()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "150 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = Testaa("1996", "150 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
@@ -411,8 +411,11 @@ public class Yksikkotestit {
     
     // --------------------------------------------------------------------------------
     // Testauksen apurutiinit
+    //
+    // Näissä kaikissa on string selo ja string vastustajat
+    // Muiden parametrien puuttumisen varalta on useita versioita
     // --------------------------------------------------------------------------------
-    private Testitulokset Testaa(int aika, String selo, String pelimaara, String vastustajat, int tulos)
+    private Testitulokset Testaa(Vakiot.Miettimisaika_enum aika, String selo, String pelimaara, String vastustajat, Vakiot.OttelunTulos_enum tulos)
     {
         //SelolaskuriOperations so = new SelolaskuriOperations();
         Syotetiedot syotetiedot = new Syotetiedot(aika, selo, pelimaara, vastustajat, tulos, /*doTrim*/true);
@@ -427,39 +430,39 @@ public class Yksikkotestit {
     }
     
     // Jos aikaa ei annettu, oletus 90 minuuttia eli pitkä peli
-    private Testitulokset Testaa(String selo, String pelimaara, String vastustajat, int tulos)
+    private Testitulokset Testaa(String selo, String pelimaara, String vastustajat, Vakiot.OttelunTulos_enum tulos)
     {
-        return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, pelimaara, vastustajat, tulos);
+        return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, selo, pelimaara, vastustajat, tulos);
     }
 
     // Jos aikaa, pelimaaraa ei annettu, oletus 90 minuuttia ja ""
-    private Testitulokset Testaa(String selo, String vastustajat, int tulos)
+    private Testitulokset Testaa(String selo, String vastustajat, Vakiot.OttelunTulos_enum tulos)
     {
-        return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, tulos);
+        return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, tulos);
     }
 
     // Jos pelimäärää ja tulosta ei annettu, oletus "" ja TULOS_MAARITTELEMATON
-    private Testitulokset Testaa(int aika, String selo, String vastustajat)
+    private Testitulokset Testaa(Vakiot.Miettimisaika_enum aika, String selo, String vastustajat)
     {
-        return Testaa(aika, selo, "", vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+        return Testaa(aika, selo, "", vastustajat, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
 
     // Jos tulosta ei annettu, oletus TULOS_MAARITTELEMATON
-    private Testitulokset Testaa(int aika, String selo, String pelimaara, String vastustajat)
+    private Testitulokset Testaa(Vakiot.Miettimisaika_enum aika, String selo, String pelimaara, String vastustajat)
     {
-        return Testaa(aika, selo, pelimaara, vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+        return Testaa(aika, selo, pelimaara, vastustajat, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
     
     // Jos aikaa ja yksittäistä tulosta ei annettu, oletus 90 minuuttia ja TULOS_MAARITTELEMATON
     private Testitulokset Testaa(String selo, String pelimaara, String vastustajat)
     {
-        return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, pelimaara, vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+        return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, selo, pelimaara, vastustajat, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
 
     // Jos aikaa, pelimäärää ja yksittäistä tulosta ei annettu, oletus 90 minuuttia, "" ja TULOS_MAARITTELEMATON
     private Testitulokset Testaa(String selo, String vastustajat)
     {
-        return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+        return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
         
     // CSV 
@@ -474,11 +477,11 @@ public class Yksikkotestit {
         if (data.length == 5) {
             return Testaa(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], so.SelvitaTulos(data[4]));
         } else if (data.length == 4) {
-            return Testaa(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.TULOS_MAARITTELEMATON);
+            return Testaa(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
         } else if (data.length == 3) {
-            return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, data[0], data[1], data[2], Vakiot.TULOS_MAARITTELEMATON);
+            return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, data[0], data[1], data[2], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
         } else if (data.length == 2) {
-            return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, data[0], "", data[1], Vakiot.TULOS_MAARITTELEMATON);
+            return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, data[0], "", data[1], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
         } else {
             assertEquals(5, data.length); // -> Illegal CSV
             return null;

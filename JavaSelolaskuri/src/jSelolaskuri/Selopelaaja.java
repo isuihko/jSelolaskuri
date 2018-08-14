@@ -88,7 +88,7 @@ public class Selopelaaja {
     
     // Tuloksien näyttämisessä tarkista miettimisaika, jos csv-formaattia käytettäessä vaihdettu
     // Päivitä näytölle oikeat SELO- tai PELO-tekstit
-    public int getMiettimisaika() {
+    public Vakiot.Miettimisaika_enum getMiettimisaika() {
         return alkuperaisetSyotteet.getMiettimisaika();
     }
     
@@ -204,7 +204,7 @@ public class Selopelaaja {
         // "+1525 =1600 -1611 +1558". Tällöin myös MinSelo ja MaxSelo voidaan selvittää.
         //
         Ottelu ottelu = ottelulista.HaeEnsimmainen(); // vastustajanSelo, ottelunTulos
-        while (ottelu.getOttelunTulos() != Vakiot.TULOS_MAARITTELEMATON) {
+        while (ottelu.getOttelunTulos() != Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON) {
 
             // päivitä seloa ja tilastoja jokaisen ottelun laskennassa, myös laske Odotustulos
             UusiSelo = PelaaOttelu(ottelu.getVastustajanSelo(), ottelu.getOttelunTulos());
@@ -230,7 +230,7 @@ public class Selopelaaja {
             int vanha = alkuperaisetSyotteet.getAlkuperainenSelo(); // aloitetaan alusta, oma apumuuttuja
             TurnauksenTulos = annettuTurnauksenTulos; // turnauksen tulos annettu, joten ei laskettavaa
 
-            if (alkuperaisetSyotteet.getMiettimisaika() <= Vakiot.MIETTIMISAIKA_ENINT_10MIN) {
+            if (alkuperaisetSyotteet.getMiettimisaika().getValue() <= Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN.getValue()) {
                 //
                 // PELO: pikashakilla on oma laskentakaavansa
                 //
@@ -276,7 +276,7 @@ public class Selopelaaja {
 
     // Palauttaa: uusi vahvuusluku
     //
-    public int PelaaOttelu(int vastustajanSelo, int tulos)
+    public int PelaaOttelu(int vastustajanSelo, Vakiot.OttelunTulos_enum tulos)
     {
         int odotustulos1;  // yhden ottelun Odotustulos, lisätään turnauksen odotustulokseen
         int selo;
@@ -286,7 +286,7 @@ public class Selopelaaja {
         odotustulos1    = MaaritaOdotustulos(alkuperaisetSyotteet.getAlkuperainenSelo(), vastustajanSelo);
 
         Odotustulos     += odotustulos1;  // monta ottelua, niin summa kunkin ottelun odotustuloksista
-        TurnauksenTulos += (int)tulos;        
+        TurnauksenTulos += tulos.getValue();  // value of enum
         
         if (alkuperaisetSyotteet.UudenPelaajanLaskenta()) {
             //
@@ -299,7 +299,7 @@ public class Selopelaaja {
             // XXX: Laskennan edetessä niitä päivitetään
 
             // Jos pelimäärä on 0, niin omalla selolla (selo-kenttä) ei ole merkitystä (UusiSelo * 0 on nolla)
-            selo = (int)Math.round((UusiSelo * UusiPelimaara + (vastustajanSelo + selomuutos[(int)tulos])) / (UusiPelimaara + 1F));
+            selo = (int)Math.round((UusiSelo * UusiPelimaara + (vastustajanSelo + selomuutos[tulos.getValue()])) / (UusiPelimaara + 1F));
 
         } else {
 
@@ -310,7 +310,7 @@ public class Selopelaaja {
             float lisakerroin = MaaritaLisakerroin(UusiSelo, alkuperaisetSyotteet.getMiettimisaika());
 
             // vanhan pelaajan SELO, kun pelimäärä jätetty tyhjäksi tai on yli 10.
-            selo = (int)Math.round((UusiSelo + kerroin1 * lisakerroin * (((int)tulos / 2F) - (odotustulos1 / 100F)) + 0.1F));
+            selo = (int)Math.round((UusiSelo + kerroin1 * lisakerroin * ((tulos.getValue() / 2F) - (odotustulos1 / 100F)) + 0.1F));
         }
 
         // tallenna vaihteluväli (jos yksi ottelu, niin jäävät samoiksi)
@@ -367,7 +367,7 @@ public class Selopelaaja {
         odotustulos = 50 + sign * index;
 
         // Pikashakissa ei odotustulosta rajoiteta 92:een        
-        return (odotustulos > 92 && alkuperaisetSyotteet.getMiettimisaika() >= Vakiot.MIETTIMISAIKA_11_59MIN) ? 92 : odotustulos;
+        return (odotustulos > 92 && alkuperaisetSyotteet.getMiettimisaika().getValue() >= Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN.getValue()) ? 92 : odotustulos;
     }    
     
         // Kerroin määritetään alkuperäisen selon mukaan.
@@ -382,14 +382,14 @@ public class Selopelaaja {
     }
     
     // Eri miettimisajoilla voi olla omia kertoimia
-    private float MaaritaLisakerroin(int selo, int aika)
+    private float MaaritaLisakerroin(int selo, Vakiot.Miettimisaika_enum aika)
     {
         float f = 1.0F;
 
         // Tämä ei vaikuta uuden pelaajan SELOn laskentaan
-        if (aika == Vakiot.MIETTIMISAIKA_60_89MIN)
+        if (aika == Vakiot.Miettimisaika_enum.MIETTIMISAIKA_60_89MIN)
             f = 0.5F;
-        else if (aika == Vakiot.MIETTIMISAIKA_11_59MIN)
+        else if (aika == Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN)
             f = (selo < 2300) ? 0.3F : 0.15F;
         return f;
     }

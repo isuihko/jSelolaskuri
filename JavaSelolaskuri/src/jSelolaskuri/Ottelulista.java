@@ -16,7 +16,7 @@ public class Ottelulista  {
 
     private final List<Ottelu> tallennetutOttelut = new ArrayList<>();
        
-    public void LisaaOttelunTulos(int vastustajanSelo, int ottelunTulos)
+    public void LisaaOttelunTulos(int vastustajanSelo, Vakiot.OttelunTulos_enum ottelunTulos)
     {
         Ottelu ottelu = new Ottelu(vastustajanSelo, ottelunTulos);
         tallennetutOttelut.add(ottelu);
@@ -29,7 +29,7 @@ public class Ottelulista  {
         if (index < getLukumaara())
             return tallennetutOttelut.get(index);
         else
-            return new Ottelu(0, Vakiot.TULOS_MAARITTELEMATON);
+            return new Ottelu(0, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
         
     public Ottelu HaeEnsimmainen()

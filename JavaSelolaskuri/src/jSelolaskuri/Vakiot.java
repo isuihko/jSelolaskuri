@@ -42,19 +42,37 @@ public class Vakiot {
     static final int LEIKEKIRJA_MAX_RIVIMAARA      = 100;
     
     // Tallenna tulokset kokonaislukuina. Laskennassa käytetään 0, 1/2 ja 1.
-    // voisi käyttää myös enum
-    static final int TULOS_MAARITTELEMATON  = -1;
-    static final int TULOS_TAPPIO           = 0;
-    static final int TULOS_TASAPELI         = 1;
-    static final int TULOS_VOITTO           = 2;
+    enum OttelunTulos_enum {
+        TULOS_MAARITTELEMATON(-1),
+        TULOS_TAPPIO(0),
+        TULOS_TASAPELI(1),
+        TULOS_VOITTO(2);
+        
+        private int value;
+        private OttelunTulos_enum(int value) {
+            this.value = value;
+        }
+        public int getValue() {
+            return value;
+        }
+    }
 
     // Miettimisajat (miettimisajan pituuden mukaan nousevassa järjestyksessä)
-    // voisi käyttää myös enum
-    static final int MIETTIMISAIKA_MAARITTELEMATON  = -1;
-    static final int MIETTIMISAIKA_ENINT_10MIN      = 10;
-    static final int MIETTIMISAIKA_11_59MIN         = 59;
-    static final int MIETTIMISAIKA_60_89MIN         = 89;
-    static final int MIETTIMISAIKA_VAH_90MIN        = 90;
+    enum Miettimisaika_enum {
+        MIETTIMISAIKA_MAARITTELEMATON(-1),
+        MIETTIMISAIKA_ENINT_10MIN(10),
+        MIETTIMISAIKA_11_59MIN(59),
+        MIETTIMISAIKA_60_89MIN(89),
+        MIETTIMISAIKA_VAH_90MIN(90);
+        
+        private int value;
+        private Miettimisaika_enum(int value) {
+            this.value = value;
+        }
+        public int getValue() {
+            return value;
+        }
+    }        
     
     // Miettimisaikojen vaihdon takia vaihdetaan kenttien tekstejä. SELO on pitkä peli ja PELO on pikashakki.
     // Esim. "Oma SELO" ja "Oma PELO".

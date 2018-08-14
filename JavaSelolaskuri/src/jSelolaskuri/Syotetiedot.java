@@ -11,11 +11,11 @@ package jSelolaskuri;
  */
 public class Syotetiedot {
     // Alkuperäiset syötteet (sama järjestys kuin näytöllä)
-    private final int    Miettimisaika;
+    private final Vakiot.Miettimisaika_enum Miettimisaika;
     private final String AlkuperainenSelo_str;
     private final String AlkuperainenPelimaara_str;
     private final String VastustajienSelot_str;  // vastustajan/vastustajien tiedot ja tulokset
-    private final int    OttelunTulos;
+    private final Vakiot.OttelunTulos_enum OttelunTulos;
 
     // Tarkastuksessa merkkijonot muutettu numeroiksi, näille kolmelle getter ja setter
     private int AlkuperainenSelo;
@@ -26,7 +26,7 @@ public class Syotetiedot {
 
     /* GETTERS AND SETTERS */
     
-    public int getMiettimisaika() {
+    public Vakiot.Miettimisaika_enum getMiettimisaika() {
         return this.Miettimisaika;
     }
     public String getAlkuperainenSelo_str() {
@@ -38,7 +38,7 @@ public class Syotetiedot {
     public String getVastustajienSelot_str() {
         return this.VastustajienSelot_str;
     }
-    public int getOttelunTulos() {
+    public Vakiot.OttelunTulos_enum getOttelunTulos() {
         return this.OttelunTulos;
     }
     public int getAlkuperainenSelo() {
@@ -67,20 +67,20 @@ public class Syotetiedot {
     // ks. SelolaskuriForm.cs/HaeSyotteetLomakkeelta()
     //
     // Ottelulista pitää kuitenkin luoda ja tehdään nyt kaikki muukin alustus
-    //public Syotetiedot() : this(Vakiot.MIETTIMISAIKA_VAH_90MIN, null, null, null, Vakiot.TULOS_MAARITTELEMATON)
+    //public Syotetiedot() : this(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, null, null, null, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON)
     //{          
     //}
-    public Syotetiedot(int aika, String selo, String pelimaara, String vastustajat, int tulos)
+    public Syotetiedot(Vakiot.Miettimisaika_enum aika, String selo, String pelimaara, String vastustajat, Vakiot.OttelunTulos_enum tulos)
     {
         this(aika, selo, pelimaara, vastustajat, tulos, /*doTrim*/false);
     }
        
     // KÄYTETÄÄN TESTATTAESSA (UnitTest)
     // esim. Syotetiedot ottelu =
-    //   new Syotetiedot(Vakiot.MIETTIMISAIKA_VAH_90MIN, "1725", "1", "1441", Vakiot.TULOS_VOITTO, /*doTrim*/true);
+    //   new Syotetiedot(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, "1725", "1", "1441", Vakiot.OttelunTulos_enum.TULOS_VOITTO, /*doTrim*/true);
     //
     // Tarkistus: vastustajat voi olla null, koska vastustajanSelo_jComboBox.getSelectedItem() voi olla null
-    public Syotetiedot(int aika, String selo, String pelimaara, String vastustajat, int tulos, boolean doTrim)
+    public Syotetiedot(Vakiot.Miettimisaika_enum aika, String selo, String pelimaara, String vastustajat, Vakiot.OttelunTulos_enum tulos, boolean doTrim)
     {
         this.Miettimisaika              = aika;
         // if doTrim -> remove leading and trailing white spaces       

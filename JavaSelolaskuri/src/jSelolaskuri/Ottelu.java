@@ -10,10 +10,10 @@ package jSelolaskuri;
  * @author Ismo
  */
 public class Ottelu {
-    private int VastustajanSelo;
-    private int OttelunTulos;
+    private final int VastustajanSelo;
+    private final Vakiot.OttelunTulos_enum OttelunTulos;
 
-    public Ottelu(int selo, int tulos)
+    public Ottelu(int selo, Vakiot.OttelunTulos_enum tulos)
     {
         VastustajanSelo = selo;
         OttelunTulos = tulos;
@@ -22,7 +22,7 @@ public class Ottelu {
     public int getVastustajanSelo() {
         return this.VastustajanSelo;
     }
-    public int getOttelunTulos() {
+    public Vakiot.OttelunTulos_enum getOttelunTulos() {
         return this.OttelunTulos;
     }
 }

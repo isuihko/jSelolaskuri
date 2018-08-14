@@ -141,10 +141,10 @@ public class SelolaskuriOperations {
     // Nämä miettimisajan valintapainikkeet ovat omana ryhmänään paneelissa
     // Aina on joku valittuna, joten ei voi olla virhetilannetta.
 
-    private int TarkistaMiettimisaika(int aika)
+    private int TarkistaMiettimisaika(Vakiot.Miettimisaika_enum aika)
     {
         int tulos = Vakiot.SYOTE_STATUS_OK;
-        if (aika == Vakiot.MIETTIMISAIKA_MAARITTELEMATON)
+        if (aika == Vakiot.Miettimisaika_enum.MIETTIMISAIKA_MAARITTELEMATON)
             tulos = Vakiot.SYOTE_VIRHE_MIETTIMISAIKA;
         return tulos;
     }
@@ -322,13 +322,13 @@ public class SelolaskuriOperations {
                     
                     // XXX: (if status)
                     // Tallennetaan ottelu tasapelinä, ei ollut +:aa tai -:sta
-                    ottelut.LisaaOttelunTulos(selo1, Vakiot.TULOS_TASAPELI);
+                    ottelut.LisaaOttelunTulos(selo1, Vakiot.OttelunTulos_enum.TULOS_TASAPELI);
                 } else if (onko_turnauksen_tulos == false && vastustaja.length() == Vakiot.MAX_PITUUS) {
                     // 5)
                     // Erillisten tulosten antaminen hyväksytään vain, jos turnauksen
                     // lopputulosta ei oltu jo annettu (onko_turnauksen_tulos false)
                     
-                    int tulos1 = Vakiot.TULOS_MAARITTELEMATON;
+                    Vakiot.OttelunTulos_enum tulos1 = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
                     
                     if (vastustaja.charAt(0) >= '0' && vastustaja.charAt(0) <= '9') {
                         // tarkistetaan, voidaan olla annettu viisinumeroinen luku
@@ -341,13 +341,13 @@ public class SelolaskuriOperations {
                         switch (c)
                         {
                             case '+':   // voitto 1 piste, tallentetaan 2
-                                tulos1 = Vakiot.TULOS_VOITTO;
+                                tulos1 = Vakiot.OttelunTulos_enum.TULOS_VOITTO;
                                 break;
                             case '=':   // tasapeli 1/2 pistettä, tallentaan 1
-                                tulos1 = Vakiot.TULOS_TASAPELI;
+                                tulos1 = Vakiot.OttelunTulos_enum.TULOS_TASAPELI;
                                 break;
                             case '-':   // tappio, tallennetaan 0
-                                tulos1 = Vakiot.TULOS_TAPPIO;
+                                tulos1 = Vakiot.OttelunTulos_enum.TULOS_TAPPIO;
                                 break;
                             default: // ei sallittu tuloksen kertova merkki
                                 virhekoodi = Vakiot.SYOTE_VIRHE_YKSITTAINEN_TULOS;
@@ -413,23 +413,24 @@ public class SelolaskuriOperations {
     
   
     // Miettimisaika, vain minuutit, esim. "5" tai "90"
-    public int SelvitaMiettimisaika(String s)
+    public Vakiot.Miettimisaika_enum SelvitaMiettimisaika(String s)
     {
-        int aika = Vakiot.MIETTIMISAIKA_MAARITTELEMATON;
+        Vakiot.Miettimisaika_enum aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_MAARITTELEMATON;
+        int temp;
         
         try {
-            aika = Integer.parseInt(s);
-            if (aika < 1) {
+            temp = Integer.parseInt(s);
+            if (temp < 1) {
                 // ei voida pelata ilman miettimisaikaa
-                aika = Vakiot.MIETTIMISAIKA_MAARITTELEMATON;
-            } else if (aika <= Vakiot.MIETTIMISAIKA_ENINT_10MIN)
-                aika = Vakiot.MIETTIMISAIKA_ENINT_10MIN;
-            else if (aika <= Vakiot.MIETTIMISAIKA_11_59MIN)
-                aika = Vakiot.MIETTIMISAIKA_11_59MIN;
-            else if (aika <= Vakiot.MIETTIMISAIKA_60_89MIN)
-                aika = Vakiot.MIETTIMISAIKA_60_89MIN;
+                aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_MAARITTELEMATON;
+            } else if (temp <= Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN.getValue())
+                aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN;
+            else if (temp <= Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN.getValue())
+                aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN;
+            else if (temp <= Vakiot.Miettimisaika_enum.MIETTIMISAIKA_60_89MIN.getValue())
+                aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_60_89MIN;
             else
-                aika = Vakiot.MIETTIMISAIKA_VAH_90MIN;
+                aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN;
         }
         catch (NumberFormatException e) {
             // Do nothing, aika is already initialized
@@ -440,26 +441,26 @@ public class SelolaskuriOperations {
     // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
     // Toistaiseksi tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
     // pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
-    public int SelvitaTulos(String s)
+    public Vakiot.OttelunTulos_enum SelvitaTulos(String s)
     {
-        int tulos = Vakiot.TULOS_MAARITTELEMATON;
+        Vakiot.OttelunTulos_enum tulos = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
         if (s.equals("0") || s.equals("0.0") || s.equals("0,0"))
-            tulos = Vakiot.TULOS_TAPPIO;
+            tulos = Vakiot.OttelunTulos_enum.TULOS_TAPPIO;
         else if (s.equals("0.5") || s.equals("0,5") || s.equals("1/2"))
-            tulos = Vakiot.TULOS_TASAPELI;
+            tulos = Vakiot.OttelunTulos_enum.TULOS_TASAPELI;
         else if (s.equals("1") || s.equals("1.0") || s.equals("1,0"))
-            tulos = Vakiot.TULOS_VOITTO;
+            tulos = Vakiot.OttelunTulos_enum.TULOS_VOITTO;
         return tulos;        
     }
         
     // Tarkista valitun ottelun tulos -painikkeen kelvollisuus
     // Virhestatus palautetaan, jos oli valittu TULOS_MAARITTELEMATON
     //
-    private int TarkistaOttelunTulos(int ottelunTulos)
+    private int TarkistaOttelunTulos(Vakiot.OttelunTulos_enum ottelunTulos)
     {
         int tulos = Vakiot.SYOTE_STATUS_OK;
 
-        if (ottelunTulos == Vakiot.TULOS_MAARITTELEMATON) {
+        if (ottelunTulos == Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON) {
             tulos = Vakiot.SYOTE_VIRHE_BUTTON_TULOS;
         }
         return tulos;

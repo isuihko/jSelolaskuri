@@ -62,7 +62,7 @@ import java.io.IOException;
  * **** TARKOITUS TEHDÄ SAMAT MUUTOKSET KUIN C#-VERSIOSSA
  * **** Versiopvm (ikkunan alareuna) muutettu 29.11.2017 -> 27.5.2018
  * 
- * 27.5.2018    - Vakioita varten luokka: Vakiot.java, esim. Vakiot.MIETTIMISAIKA_11_59MIN
+ * 27.5.2018    - Vakioita varten luokka: Vakiot.java, esim. Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN
  *              - rutiinien ym. nimiä alettu muuttaa Java-nimeämisstandardin mukaisiksi (kesken)
  *              - Ikkunan sulkeminen varmistetaan
  *              - File-menu, jonka alla Ohjeita / Laskentakaavat / Tietoja ohjelmasta / Sulje ohjelma
@@ -782,12 +782,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             if (data.length == 5) {
                 return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], so.SelvitaTulos(data[4]));
             } else if (data.length == 4) {
-                return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.TULOS_MAARITTELEMATON);
+                return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
             } else if (data.length == 3) {
-                return new Syotetiedot(HaeMiettimisaika(), data[0], data[1], data[2], Vakiot.TULOS_MAARITTELEMATON);
+                return new Syotetiedot(HaeMiettimisaika(), data[0], data[1], data[2], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
             } else if (data.length == 2) {
-                return new Syotetiedot(HaeMiettimisaika(), data[0], "", data[1], Vakiot.TULOS_MAARITTELEMATON);
-            } else if (data.length > 1) {
+                return new Syotetiedot(HaeMiettimisaika(), data[0], "", data[1], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
+            } else if (data.length > 5) {
                 // CSV FORMAT ERROR, ILLEGAL DATA
                 return null;
             }
@@ -798,33 +798,33 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
 
     // Nämä miettimisajan valintapainikkeet ovat omana ryhmänään paneelissa
     // Aina on joku valittuna, joten ei voi olla virhetilannetta.
-    private int HaeMiettimisaika()
+    private Vakiot.Miettimisaika_enum HaeMiettimisaika()
     {
-        int valinta;
+        Vakiot.Miettimisaika_enum valinta;
         
         if (miettimisaika_vah90_btn.isSelected())
-            valinta = Vakiot.MIETTIMISAIKA_VAH_90MIN;
+            valinta = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN;
         else if (miettimisaika_60_89_btn.isSelected())
-            valinta = Vakiot.MIETTIMISAIKA_60_89MIN;
+            valinta = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_60_89MIN;
         else if (miettimisaika_11_59_btn.isSelected())
-            valinta = Vakiot.MIETTIMISAIKA_11_59MIN;
+            valinta = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_11_59MIN;
         else
-            valinta = Vakiot.MIETTIMISAIKA_ENINT_10MIN;
+            valinta = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN;
         return valinta;
     }    
 
     // Ottelun tulos voi olla valittu radiobuttoneilla tai valitsematta (MAARITTELEMATON)
-    private int HaeOttelunTulos()
+    private Vakiot.OttelunTulos_enum HaeOttelunTulos()
     {
-        int valinta;
+        Vakiot.OttelunTulos_enum valinta;
         if (tulosVoitto_btn.isSelected())
-            valinta = Vakiot.TULOS_VOITTO;
+            valinta = Vakiot.OttelunTulos_enum.TULOS_VOITTO;
         else if (tulosTasapeli_btn.isSelected())
-            valinta = Vakiot.TULOS_TASAPELI;
+            valinta = Vakiot.OttelunTulos_enum.TULOS_TASAPELI;
         else if (tulosTappio_btn.isSelected())
-            valinta = Vakiot.TULOS_TAPPIO;
+            valinta = Vakiot.OttelunTulos_enum.TULOS_TAPPIO;
         else 
-            valinta = Vakiot.TULOS_MAARITTELEMATON;
+            valinta = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
         
         return valinta;
     }
@@ -1062,7 +1062,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         //
         // Ei riitä tarkistaa, onko valittu eri kuin näytöllä, koska tekstit on voitu vaihtaa välillä
         //if (tulokset.getMiettimisaika() != HaeMiettimisaika()) {
-            if (tulokset.getMiettimisaika() == Vakiot.MIETTIMISAIKA_ENINT_10MIN)
+            if (tulokset.getMiettimisaika() == Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN)
                 vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_PELOKSI);
             else
                 vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum.VAIHDA_SELOKSI);
