@@ -44,154 +44,155 @@ public class Yksikkotestit {
      */
     @Test
     public void UudenPelaajanOttelutYksittain() {
-        // System.out.println("Testaa laskentaa");
+            // Testataan uuden pelaajan vahvuusluvun muutokset ottelu kerrallaan.
+
         t = Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, "1525", "0", "1525", Vakiot.TULOS_VOITTO);
         // Jos pitkä peli, niin jatkossa käytetään lyhyempää muotoa
-        // var t = Testaa("1525", "0", "1525", Vakiot.TULOS_VOITTO);
+        // var t = Testaa("1525", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         // jossa miettimisaika on oletuksena MIETTIMISAIKA_VAH_90MIN
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1725);
-        a(t.Item2.getUusiPelimaara(), 1);
-        a(t.Item2.getTurnauksenTulos(), 1 * 2);        // tulos voitto (tulee kokonaislukuna 2)
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1525);  // keskivahvuus
-        a(t.Item2.getVastustajienLkm(), 1);            // yksi vastustaja
-        a(t.Item2.getOdotustulos(), 50);               // 0,50*100  odotustulos palautuu 100-kertaisena
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo                
-        
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1725,   t.Item2.getUusiSelo());                // uusi vahvuusluku
+        assertEquals(1,      t.Item2.getUusiPelimaara());              // uusi pelimäärä 0+1 = 1
+        assertEquals(1 * 2,  t.Item2.getTurnauksenTulos());        // tulos voitto 
+        assertEquals(1525,   t.Item2.getTurnauksenKeskivahvuus());  // keskivahvuus
+        assertEquals(1,      t.Item2.getVastustajienLkm());            // yksi vastustaja
+        assertEquals(50,     t.Item2.getOdotustulos());               // 0,50*100  odotustulos palautuu 100-kertaisena
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // yksi ottelu, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // yksi ottelu, sama kuin UusiSelo
+
         // Ja tästä eteenpäin käytetään edellisestä laskennasta saatuja UusiSelo ja UusiPelimaara
         t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1441", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1683);
-        a(t.Item2.getUusiPelimaara(), 2);              // uusi pelimäärä 1+1 = 2
-        a(t.Item2.getTurnauksenTulos(), 1 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1441);
-        a(t.Item2.getOdotustulos(), 84);               // 0,84*100
-        
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1683,   t.Item2.getUusiSelo());
+        assertEquals(2,      t.Item2.getUusiPelimaara());              // uusi pelimäärä 1+1 = 2
+        assertEquals(1 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1441,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(84,     t.Item2.getOdotustulos());               // 0,84*100
+
         t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1973", Vakiot.TULOS_TAPPIO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1713);
-        a(t.Item2.getUusiPelimaara(), 3);
-        a(t.Item2.getTurnauksenTulos(), 0);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1973);
-        a(t.Item2.getOdotustulos(), 16);               // 0,16*100
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1713,   t.Item2.getUusiSelo());
+        assertEquals(3,      t.Item2.getUusiPelimaara());
+        assertEquals(0,      t.Item2.getTurnauksenTulos());
+        assertEquals(1973,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(16,     t.Item2.getOdotustulos());               // 0,16*100
 
         t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1718", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1764);
-        a(t.Item2.getUusiPelimaara(), 4);
-        a(t.Item2.getTurnauksenTulos(), 1 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1718);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1764,   t.Item2.getUusiSelo());
+        assertEquals(4,      t.Item2.getUusiPelimaara());
+        assertEquals(1 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1718,   t.Item2.getTurnauksenKeskivahvuus());
 
         t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1784", Vakiot.TULOS_TAPPIO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1728);
-        a(t.Item2.getUusiPelimaara(), 5);
-        a(t.Item2.getTurnauksenTulos(), 0);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1784);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1728,   t.Item2.getUusiSelo());
+        assertEquals(5,      t.Item2.getUusiPelimaara());
+        assertEquals(0,      t.Item2.getTurnauksenTulos());
+        assertEquals(1784,   t.Item2.getTurnauksenKeskivahvuus());
 
-        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()),  "1660", Vakiot.TULOS_TAPPIO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1683);
-        a(t.Item2.getUusiPelimaara(), 6);
-        a(t.Item2.getTurnauksenTulos(), 0);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1660);
+        t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1660", Vakiot.TULOS_TAPPIO);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1683,   t.Item2.getUusiSelo());
+        assertEquals(6,      t.Item2.getUusiPelimaara());
+        assertEquals(0,      t.Item2.getTurnauksenTulos());
+        assertEquals(1660,   t.Item2.getTurnauksenKeskivahvuus());
 
         t = Testaa(Integer.toString(t.Item2.getUusiSelo()), Integer.toString(t.Item2.getUusiPelimaara()), "1966", Vakiot.TULOS_TAPPIO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 0);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1966);
-    }
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(0,      t.Item2.getTurnauksenTulos());
+        assertEquals(1966,   t.Item2.getTurnauksenKeskivahvuus());    }
 	
     // Calculation from the format ""+1525 +1441 -1973 +1718..." takes more time than from "3 1525 1441 1973 1718..."
     @Test
     public void UudenPelaajanOttelutKerralla1()
     {
-        t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 -1784 -1660 -1966", Vakiot.TULOS_MAARITTELEMATON);
+        t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 -1784 -1660 -1966");
         // Jos pitkä peli ja tulos määrittelematon, niin jatkossa käytetään lyhyempää muotoa, jossa 
         // var t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 -1784 -1660 -1966");
         // jossa miettimisaika on oletuksena MIETTIMISAIKA_VAH_90MIN ja tulos TULOS_MAARITTELEMATON
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getVastustajienLkm(), 7);
-        a(t.Item2.getOdotustulos(), 199);          // odotustulos 1,99*100
-        a(t.Item2.getMinSelo(), 1683);             // laskennan aikainen minimi
-        a(t.Item2.getMaxSelo(), 1764);             // laskennan aikainen maksimi
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());
+        assertEquals(199,    t.Item2.getOdotustulos());          // odotustulos 1,99*100
+        assertEquals(1683,   t.Item2.getMinSelo());             // laskennan aikainen minimi
+        assertEquals(1764,   t.Item2.getMaxSelo());             // laskennan aikainen maksimi
     }
 
     @Test
     public void UudenPelaajanOttelutKerralla2()
     {
         t = Testaa("1525", "0", "3 1525 1441 1973 1718 1784 1660 1966");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
     }
 
     // Tässä lasketaan samat ottelut kuin uudelle pelaajalle, mutta vanhan pelaajan kaavalla (pelimäärä "")
     @Test
     public void SamatOttelutKuinUudella1() // Turnauksen tulos lasketaan otteluista
     {
-        t = Testaa("1525", "", "+1525 +1441 -1973 +1718 -1784 -1660 -1966");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1571);
-        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getVastustajienLkm(), 7);        // seitsemän vastustajaa
-        a(t.Item2.getOdotustulos(), 199);          // odotustulos 1,99*100
-        a(t.Item2.getMinSelo(), 1548);             // laskennan aikainen minimi
-        a(t.Item2.getMaxSelo(), 1596);             // laskennan aikainen maksimi
+        t = Testaa("1525", "+1525 +1441 -1973 +1718 -1784 -1660 -1966");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1571,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());        // seitsemän vastustajaa
+        assertEquals(199,    t.Item2.getOdotustulos());          // odotustulos 1,99*100
+        assertEquals(1548,   t.Item2.getMinSelo());             // laskennan aikainen minimi
+        assertEquals(1596,   t.Item2.getMaxSelo());             // laskennan aikainen maksimi
     }
 
     @Test
     public void SamatOttelutKuinUudella2() // Turnauksen tulos annettu numerona
     {
-        t = Testaa("1525", "", "3 1525 1441 1973 1718 1784 1660 1966");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1571);
-        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getVastustajienLkm(), 7);        // seitsemän vastustajaa
-        a(t.Item2.getOdotustulos(), 199);          // odotustulos 1,99*100
+        t = Testaa("1525", "3 1525 1441 1973 1718 1784 1660 1966");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1571,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());        // seitsemän vastustajaa
+        assertEquals(199,    t.Item2.getOdotustulos());          // odotustulos 1,99*100
     }
 
     // Kolme tapaa syöttää ottelun tulos
     @Test
     public void TulosPainikkeilla()
     {
-        t = Testaa("1800", "", "1900", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1823);
-        a(t.Item2.getOdotustulos(), 36);   // odotustulos 0,36*100
+        t = Testaa("1800", "1900", Vakiot.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1823,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
     }
 
     @Test
     public void TulosSelossa()
     {
-        t = Testaa("1800", "", "+1900");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1823);
-        a(t.Item2.getOdotustulos(), 36);   // odotustulos 0,36*100
+        t = Testaa("1800", "+1900");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1823,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
     }
 
     @Test
     public void TulosNumeronaEnnenSeloa()
     {
-        t = Testaa( "1800", "", "1.0 1900");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1823);
-        a(t.Item2.getOdotustulos(), 36);   // odotustulos 0,36*100
+        t = Testaa("1800", "1.0 1900");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1823,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
     }
 
     // Merkkijonoissa ylimääräisiä välilyöntejä
@@ -199,49 +200,49 @@ public class Yksikkotestit {
     public void UudenPelaajanOttelutValilyonteja()
     {
         t = Testaa("    1525  ", "0  ", "     +1525  +1441           -1973 +1718    -1784 -1660     -1966   ");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
     }
 
     @Test
     public void PikashakinVahvuuslukuTurnauksesta()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 2033);
-        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
-        a(t.Item2.getTurnauksenTulos(), (int)(10.5F * 2));
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1827);  // (1977+2013+1923+1728+1638+1684+1977+2013+1923+1728+1638+1684)/12 = 1827,167
-        a(t.Item2.getVastustajienLkm(), 12);           // 12 vastustajaa eli ottelua
-        a(t.Item2.getOdotustulos(), 840);              // odotustulos 8,40*100
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2033,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());  // 
+        assertEquals(12,     t.Item2.getVastustajienLkm());           // 12 vastustajaa eli ottelua
+        assertEquals(840,    t.Item2.getOdotustulos());              // odotustulos 8,40*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
     }
 
     // Testataan eri pelimäärillä, ettei tulos riipu pelimäärästä silloin kun ei ole uuden pelaajan laskenta
     @Test
     public void PikashakinVahvuuslukuTurnauksestaPelimaaralla()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "75", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 2033);
-        a(t.Item2.getUusiPelimaara(), 87);             // 75 + 12 ottelua = 87
-        a(t.Item2.getTurnauksenTulos(), (int)(10.5F * 2));
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1827);
-        a(t.Item2.getVastustajienLkm(), 12);
-        a(t.Item2.getOdotustulos(), 840);              // odotustulos 8,40*100
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "75", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2033,   t.Item2.getUusiSelo());
+        assertEquals(87,     t.Item2.getUusiPelimaara());             // 75 + 12 ottelua = 87
+        assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(12,     t.Item2.getVastustajienLkm());
+        assertEquals(840,    t.Item2.getOdotustulos());              // odotustulos 8,40*100
     }
 
     @Test
     public void ShakinVahvuuslukuTurnauksesta()
     {
-        t = Testaa("1996", "", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 2050);
-        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
+        t = Testaa("1996", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2050,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
     }
 
     // Testataan eri pelimäärillä, ettei tulos riipu pelimäärästä silloin kun ei ole uuden pelaajan laskenta
@@ -249,9 +250,9 @@ public class Yksikkotestit {
     public void ShakinVahvuuslukuTurnauksestaPelimaaralla()
     {
         t = Testaa("1996", "150", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 2050);
-        a(t.Item2.getUusiPelimaara(), 162);        // 150 + 12 ottelua  = 162
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2050,   t.Item2.getUusiSelo());
+        assertEquals(162,    t.Item2.getUusiPelimaara());        // 150 + 12 ottelua  = 162
     }
 
 
@@ -264,14 +265,14 @@ public class Yksikkotestit {
     public void VirheellinenSyoteOmaSELO()
     {
         t = Testaa("15zz5", "0", "1525", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_OMA_SELO);
+        assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
     }
 
     @Test
     public void VirheellinenSyoteOmaSELOtyhja()
     {
         t = Testaa("", "0", "1525", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_OMA_SELO);
+        assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
     }
     
     // Testataan virheellinen syöte, tässä virheellinen vastustajan vahvuusluku
@@ -279,14 +280,14 @@ public class Yksikkotestit {
     public void VirheellinenSyoteVastustajanSELO()
     {
         t = Testaa("1525", "0", "c5sdffew25", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
     @Test
     public void VirheellinenSyoteVastustajanSELOtyhja()
     {
         t = Testaa("1525", "0", "", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
     
     // Pelimäärä virheellinen, annettu liian suureksi
@@ -294,7 +295,7 @@ public class Yksikkotestit {
     public void VirheellinenSyoteOmaPelimaara()
     {
         t = Testaa("1525", "123456", "1525", Vakiot.TULOS_VOITTO);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_PELIMAARA);
+        assertEquals(Vakiot.SYOTE_VIRHE_PELIMAARA, t.Item1);
     }
 
     // Ei ole annettu ottelun tulosta valintanapeilla tappio, tasapeli tai voitto
@@ -302,7 +303,7 @@ public class Yksikkotestit {
     public void VirheellinenSyoteEiTulosta()
     {
         t = Testaa("1525", "0", "1600", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_BUTTON_TULOS);
+        assertEquals(Vakiot.SYOTE_VIRHE_BUTTON_TULOS, t.Item1);
     }
 
     // Virheellinen yksittäinen tulos turnauksen tuloksissa. Oltava + (voitto), - (tappio) tai = (tasan).
@@ -310,23 +311,23 @@ public class Yksikkotestit {
     public void VirheellinenSyoteTurnauksessaVirheellinenTulos()
     {
         t = Testaa("1525", "0", "+1525 +1441 -1973 +1718 /1784 -1660 -1966", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_YKSITTAINEN_TULOS);
+        assertEquals(Vakiot.SYOTE_VIRHE_YKSITTAINEN_TULOS, t.Item1);
     }
 
     // Annettu isompi pistemäärä (20) kuin mitä on otteluita (12 kpl)
     @Test
     public void VirheellinenSyoteTurnauksenTulos1()  
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "20 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS);
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "20 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
     }
 
     // Annettu isompi pistemäärä (99) kuin mitä on otteluita (12 kpl)
     @Test
     public void VirheellinenSyoteTurnauksenTulos2()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "99 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS);
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "99 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
     }
 
     // Annettu negatiivinen pistemäärä.
@@ -335,8 +336,8 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos3()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
     // Annettu isompi pistemäärä (150) kuin mitä on otteluita (12 kpl)
@@ -345,50 +346,51 @@ public class Yksikkotestit {
     @Test
     public void VirheellinenSyoteTurnauksenTulos4()
     {
-        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "150 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684", Vakiot.TULOS_MAARITTELEMATON);
-        a(t.Item1, Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO);
+        t = Testaa(Vakiot.MIETTIMISAIKA_ENINT_10MIN, "1996", "", "150 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
     @Test
     public void CSV_UudenPelaajanOttelutYksittain1()
     {
         t = Testaa("90,1525,0,1525,1");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1725);
-        a(t.Item2.getUusiPelimaara(), 1);
-        a(t.Item2.getTurnauksenTulos(), 1 * 2);        // tulos voitto (tulee kokonaislukuna 2)
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1525);  // keskivahvuus
-        a(t.Item2.getVastustajienLkm(), 1);            // yksi vastustaja
-        a(t.Item2.getOdotustulos(), 50);               // 0,50*100  odotustulos palautuu 100-kertaisena
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // yksi ottelu, sama kuin UusiSelo              
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1725,   t.Item2.getUusiSelo());                // uusi vahvuusluku
+        assertEquals(1,      t.Item2.getUusiPelimaara());              // uusi pelimäärä 0+1 = 1
+        assertEquals(1 * 2,  t.Item2.getTurnauksenTulos());        // tulos voitto 
+        assertEquals(1525,   t.Item2.getTurnauksenKeskivahvuus());  // keskivahvuus
+        assertEquals(1,      t.Item2.getVastustajienLkm());            // yksi vastustaja
+        assertEquals(50,     t.Item2.getOdotustulos());               // 0,50*100  odotustulos palautuu 100-kertaisena
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // yksi ottelu, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // yksi ottelu, sama kuin UusiSelo           
     }
     @Test
     public void CSV_UudenPelaajanOttelutKerralla1()
     {
         t = Testaa("90,1525,0,+1525 +1441 -1973 +1718 -1784 -1660 -1966");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getVastustajienLkm(), 7);
-        a(t.Item2.getOdotustulos(), 199);          // odotustulos 1,99*100
-        a(t.Item2.getMinSelo(), 1683);             // laskennan aikainen minimi
-        a(t.Item2.getMaxSelo(), 1764);             // laskennan aikainen maksimi
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());
+        assertEquals(199,    t.Item2.getOdotustulos());          // odotustulos 1,99*100
+        assertEquals(1683,   t.Item2.getMinSelo());             // laskennan aikainen minimi
+        assertEquals(1764,   t.Item2.getMaxSelo());             // laskennan aikainen maksimi
     }
 
     @Test
     public void CSV_UudenPelaajanOttelutKerralla2()
     {
         t = Testaa("90,1525,0,3 1525 1441 1973 1718 1784 1660 1966");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 1695);
-        a(t.Item2.getUusiPelimaara(), 7);
-        a(t.Item2.getTurnauksenTulos(), 3 * 2);
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1724);
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1695,   t.Item2.getUusiSelo());
+        assertEquals(7,      t.Item2.getUusiPelimaara());
+        assertEquals(3 * 2,  t.Item2.getTurnauksenTulos());
+        assertEquals(1724,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(7,      t.Item2.getVastustajienLkm());
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // yksi ottelu, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // yksi ottelu, sama kuin UusiSelo           
     }
 
     
@@ -396,15 +398,15 @@ public class Yksikkotestit {
     public void CSV_PikashakinVahvuuslukuTurnauksesta()
     {
         t = Testaa("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
-        a(t.Item1, Vakiot.SYOTE_STATUS_OK);
-        a(t.Item2.getUusiSelo(), 2033);
-        a(t.Item2.getUusiPelimaara(), Vakiot.PELIMAARA_TYHJA);  // pelimäärää ei laskettu
-        a(t.Item2.getTurnauksenTulos(), (int)(10.5F * 2));
-        a(t.Item2.getTurnauksenKeskivahvuus(), 1827);  // (1977+2013+1923+1728+1638+1684+1977+2013+1923+1728+1638+1684)/12 = 1827,167
-        a(t.Item2.getVastustajienLkm(), 12);           // 12 vastustajaa eli ottelua
-        a(t.Item2.getOdotustulos(), 840);              // odotustulos 8,40*100
-        a(t.Item2.getMinSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
-        a(t.Item2.getMaxSelo(), t.Item2.getUusiSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2033,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());  // 
+        assertEquals(12,     t.Item2.getVastustajienLkm());           // 12 vastustajaa eli ottelua
+        assertEquals(840,    t.Item2.getOdotustulos());              // odotustulos 8,40*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
     }
     
     // --------------------------------------------------------------------------------
@@ -430,6 +432,24 @@ public class Yksikkotestit {
         return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, pelimaara, vastustajat, tulos);
     }
 
+    // Jos aikaa, pelimaaraa ei annettu, oletus 90 minuuttia ja ""
+    private Testitulokset Testaa(String selo, String vastustajat, int tulos)
+    {
+        return Testaa(Vakiot.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, tulos);
+    }
+
+    // Jos pelimäärää ja tulosta ei annettu, oletus "" ja TULOS_MAARITTELEMATON
+    private Testitulokset Testaa(int aika, String selo, String vastustajat)
+    {
+        return Testaa(aika, selo, "", vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+    }
+
+    // Jos tulosta ei annettu, oletus TULOS_MAARITTELEMATON
+    private Testitulokset Testaa(int aika, String selo, String pelimaara, String vastustajat)
+    {
+        return Testaa(aika, selo, pelimaara, vastustajat, Vakiot.TULOS_MAARITTELEMATON);
+    }
+    
     // Jos aikaa ja yksittäistä tulosta ei annettu, oletus 90 minuuttia ja TULOS_MAARITTELEMATON
     private Testitulokset Testaa(String selo, String pelimaara, String vastustajat)
     {
@@ -464,9 +484,4 @@ public class Yksikkotestit {
             return null;
         }
     }
-    
-    /* IN C# PARAMETERS WERE IN DIFFERENT ORDER */
-    private void a(int got, int expected) {
-        assertEquals(expected, got);
-    }   
 }
