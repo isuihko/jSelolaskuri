@@ -11,7 +11,9 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop applic
 
 8.8.2018 Small modifications to form, e.g. instruction that Enter calculates in vastustajanSelo field. Version date 8.8.2018.
 
-12.8.2018 Edit menu with cut/copy/paste. Can copy to and paste from clipboard opponents/results field.
+12.8.2018 Edit menu with cut/copy/paste. Can copy to and paste from clipboard opponents/results field. Version date 12.8.2018.
+
+14.8.2018 Testing modifications, simplifications e.g. using default values if some data was not defined. Now also uses enums for thinking time and match result. No changes to operation so not changed version date.
 
 ------
 
