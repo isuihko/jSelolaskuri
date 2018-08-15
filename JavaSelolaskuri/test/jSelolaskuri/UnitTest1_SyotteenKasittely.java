@@ -109,7 +109,6 @@ public class UnitTest1_SyotteenKasittely {
             ottelu = lista.HaeSeuraava();
             i++;
         }
-
     }
 
 

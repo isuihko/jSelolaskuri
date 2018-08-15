@@ -751,19 +751,24 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     // Tietoja ei tarkisteta tässä
     // Miettimisaika on aina kelvollinen, mutta merkkijonot eivät välttämättä
     // Myös ottelun tulos voi/saa olla antamatta, joten silloin se on määrittelemätön
+    //
+    // Jos CSV-formaatti ja on liian monta arvoa, palauttaa null
     private Syotetiedot HaeSyotteetLomakkeelta()
     {
         // Remove all leading and trailing white spaces from the form
         selo_in.setText(selo_in.getText().trim());
         pelimaara_in.setText(pelimaara_in.getText().trim());
-        
-        // poista sanojen väleistä ylimääräiset välilyönnit!
+
         String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
         // jComboBox.getSelectedItem() could had been null
         if (s != null) {
             s = s.trim();
             vastustajanSelo_jComboBox.setSelectedItem(s);  // XXX: CHECK THIS, CLEAN CODE
         }
+        
+        
+        // process opponents field and check if CSV format was used                
+        
         if (s != null && !s.isEmpty()) {
             vastustajanSelo_jComboBox.setSelectedItem(s.trim().replaceAll("\\s+", " "));
 
@@ -778,18 +783,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // Jos 2: pelimäärää ei anneta, käytetään oletuksena tyhjää ""
             //
             String csv = (String)vastustajanSelo_jComboBox.getSelectedItem();
-            String[] data = csv.split(",");
-            if (data.length == 5) {
-                return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], so.SelvitaTulos(data[4]));
-            } else if (data.length == 4) {
-                return new Syotetiedot(so.SelvitaMiettimisaika(data[0]), data[1], data[2], data[3], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
-            } else if (data.length == 3) {
-                return new Syotetiedot(HaeMiettimisaika(), data[0], data[1], data[2], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
-            } else if (data.length == 2) {
-                return new Syotetiedot(HaeMiettimisaika(), data[0], "", data[1], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
-            } else if (data.length > 5) {
-                // CSV FORMAT ERROR, ILLEGAL DATA
-                return null;
+            if (csv.contains(",")) {
+                // The thinking time might be needed from the form if there are 2 or 3 values in CSV format
+                return so.SelvitaCSV(HaeMiettimisaika(), csv);
             }
         }
         
@@ -824,7 +820,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         else if (tulosTappio_btn.isSelected())
             valinta = Vakiot.OttelunTulos_enum.TULOS_TAPPIO;
         else 
-            valinta = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
+            valinta = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON; // ei mahdollinen
         
         return valinta;
     }
@@ -1289,6 +1285,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         vastustajanSelo_jComboBox.addItem("90,1683,2,1973,0");
         // Also Miettimisaika väh. 90 min, nykyinen SELO 1683, pelimäärä 2, ottelun tulos 0=tappio
         vastustajanSelo_jComboBox.addItem("1973");
+        
+        vastustajanSelo_jComboBox.addItem("90,1713,3,1718,1");
         }
     
     private void vastustajanSelo_jComboBox_KasitteleEnter()

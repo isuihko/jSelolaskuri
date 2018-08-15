@@ -23,6 +23,9 @@ import java.util.List;
 // Public:
 //      HaeViimeksiLasketutTulokset  - get the latest calculated selo and game count
 //      TarkistaSyote                - check the input data like SELO and number of games, opponents and results
+//      SelvitaCSV                   - erota CSV-formaatin merkkijonosta syotetiedot (miettimisaika, oma selo, ...)
+//      SelvitaMiettimisaikaCSV      - muuta CSV-formaatissa annettu merkkijono miettimisajaksi
+//      SelvitaTulosCSV              - muuta CSV-formaatissa annettu merkkijono ottelun tulokseksi
 //      SuoritaLaskenta              - calculate the results
 //
 // 31.7.2018 Ismo Suihko
@@ -233,7 +236,7 @@ public class SelolaskuriOperations {
         float syotetty_tulos = 0F;           // tähän sitten sen tulos desimaalilukuna (esim. 2,5)        
 
         // kentässä voidaan antaa alussa turnauksen tulos, esim. 0.5, 2.0, 2.5, 7.5 eli saadut pisteet
-        selopelaaja.setAnnettuTurnauksenTulos(-1.0F);  // oletus: ei annettu turnauksen tulosta        
+        selopelaaja.setAnnettuTurnauksenTulos(Vakiot.TURNAUKSEN_TULOS_ANTAMATTA);  // oletus: ei annettu turnauksen tulosta
         
         if (syote.isEmpty()) {
             status = false;  // XXX: this status value is unused, check the usage
@@ -309,20 +312,36 @@ public class SelolaskuriOperations {
                     try {
                         selo1 = Integer.parseInt(vastustaja);
                         if (selo1 < Vakiot.MIN_SELO || selo1 > Vakiot.MAX_SELO) {
-                            virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
+                            virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;  // -> virheilmoitus, ei ollut numero
                             status = false;
                             break;
                         }
                     }
                     catch (NumberFormatException e) {
-                        virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;
+                        virhekoodi = Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO;  // -> virheilmoitus, ei sallittu numero
                         status = false;
                         break;
                     }
                     
-                    // XXX: (if status)
-                    // Tallennetaan ottelu tasapelinä, ei ollut +:aa tai -:sta
-                    ottelut.LisaaOttelunTulos(selo1, Vakiot.OttelunTulos_enum.TULOS_TASAPELI);
+                    // Hm... miten tallennus?
+                    //
+                    //if (onko_turnauksen_tulos) {
+                    //    Jos annettu turnauksen tulos, ei merkitystä, koska tehdään uusi laskenta, jossa käytetään turnauksen tulosta
+                    //    ottelut.LisaaOttelunTulos(selo1, Vakiot.OttelunTulos_enum.TULOS_EI_ANNETTU);
+                    //} else {
+                    //    // Tallenna tasapeli, jos tulokset formaatissa +1624 -1700 =1685 +1400, jossa tasapeli
+                    //    // on annettu ilman '='-merkkiä eli vaikkapa "+1624 -1700 1685 +1400"
+                    //    ottelut.LisaaOttelunTulos(selo1, Vakiot.OttelunTulos_enum.TULOS_TASAPELI);
+                    //}
+
+                    // Jos ottelun tulosta ei annettu, niin sitä ei tallenneta
+                    // Laskennassa tämä otetaan kuitenkin huomioon tasapelinä, jolloin "+1624 -1700 1685 +1400" menee oikein
+                    // Ks. Selopelaaja PelaaOttelu()
+                    //
+                    // Näin myös yksikkötestauksessa on helpompi tarkistaa tiedot,
+                    // koska syötteen "=1234" on eri tapaus kuin "1234".
+                    ottelut.LisaaOttelunTulos(selo1, Vakiot.OttelunTulos_enum.TULOS_EI_ANNETTU); // OK
+
                 } else if (onko_turnauksen_tulos == false && vastustaja.length() == Vakiot.MAX_PITUUS) {
                     // 5)
                     // Erillisten tulosten antaminen hyväksytään vain, jos turnauksen
@@ -410,10 +429,29 @@ public class SelolaskuriOperations {
         // Palauta virhekoodi tai selvitetty yksittäisen vastustajan selo (joka on 0, jos ottelut listassa)
         return virhekoodi < 0 ? virhekoodi : vastustajanSelo;       
     }
+        //
+        // Used from the form. If there are only 2 or 3 values in CSV format, also thinking time from the form is needed
+        //
+    public Syotetiedot SelvitaCSV(Vakiot.Miettimisaika_enum aika, String csv)
+    {       
+        String[] data = csv.split(",");
+           
+        if (data.length == 5) {
+            return new Syotetiedot(this.SelvitaMiettimisaikaCSV(data[0]), data[1], data[2], data[3], this.SelvitaTulosCSV(data[4]));
+        } else if (data.length == 4) {
+            return new Syotetiedot(this.SelvitaMiettimisaikaCSV(data[0]), data[1], data[2], data[3], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
+        } else if (data.length == 3) {
+            return new Syotetiedot(aika, data[0], data[1], data[2], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
+        } else if (data.length == 2) {
+            return new Syotetiedot(aika, data[0], "", data[1], Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
+        } else {
+            return null; // CSV FORMAT ERROR, ILLEGAL DATA
+        }
+    }
     
   
     // Miettimisaika, vain minuutit, esim. "5" tai "90"
-    public Vakiot.Miettimisaika_enum SelvitaMiettimisaika(String s)
+    public Vakiot.Miettimisaika_enum SelvitaMiettimisaikaCSV(String s)
     {
         Vakiot.Miettimisaika_enum aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_MAARITTELEMATON;
         int temp;
@@ -441,7 +479,7 @@ public class SelolaskuriOperations {
     // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
     // Toistaiseksi tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
     // pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
-    public Vakiot.OttelunTulos_enum SelvitaTulos(String s)
+    public Vakiot.OttelunTulos_enum SelvitaTulosCSV(String s)
     {
         Vakiot.OttelunTulos_enum tulos = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
         if (s.equals("0") || s.equals("0.0") || s.equals("0,0"))
@@ -452,9 +490,17 @@ public class SelolaskuriOperations {
             tulos = Vakiot.OttelunTulos_enum.TULOS_VOITTO;
         return tulos;        
     }
-        
+       
     // Tarkista valitun ottelun tulos -painikkeen kelvollisuus
-    // Virhestatus palautetaan, jos oli valittu TULOS_MAARITTELEMATON
+    //
+    // Painikkeesta ei voida saada väärää tulosta. 
+    // Mutta jos tulos oli kerrottu CSV-formaatissa, niin siellä on voinut olla virhe,
+    // ks. SelvitaTulosCSV()
+    //
+    // Virhestatus palautetaan, jos oli TULOS_MAARITTELEMATON
+    //
+    // Tulos TULOS_EI_ANNETTU ei ole virhe, koska se koskee merkkijonossa annettua tulosta,
+    // joka tarkoituksella on jätetty antamatta. TULOS_EI_ANNETTU lasketaan tasapelinä.
     //
     private int TarkistaOttelunTulos(Vakiot.OttelunTulos_enum ottelunTulos)
     {

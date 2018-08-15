@@ -100,12 +100,19 @@ public class Selopelaaja {
     //
     // Huom! Jos tulos on annettu virheellisesti esim. 0,9 tai 2,4, niin pyöristys alas
     // em. syötteistä saadaan 0,5 tai 2,0 (tallennus 1 tai 4)
+    // Jos ei annettu, arvo on TURNAUKSEN_TULOS_ANTAMATTA (eli negatiivinen luku)
     private int annettuTurnauksenTulos;
             
     // Tarvitaan oma erillinen setter, koska tehdään muunnos float -> kokonaisluku
-    public void setAnnettuTurnauksenTulos(float f)
+    public void setAnnettuTurnauksenTulos(float f)      // set the tournament result
     {
-        annettuTurnauksenTulos = (int)(2 * f + 0.01F); // pyöristys
+        annettuTurnauksenTulos = (int)Math.round(2 * f);
+    }
+    
+    private boolean OnkoAnnettuTurnauksenTulos() {
+        // riittää tarkistaa, että on suurempi kuin asetettu vakio
+        // Tuohan oli vieläpä tallennettu 2.0:lla kerrottuna eli oli -2
+        return annettuTurnauksenTulos > Vakiot.TURNAUKSEN_TULOS_ANTAMATTA;
     }
     
     public Selopelaaja () {
@@ -173,7 +180,7 @@ public class Selopelaaja {
         // jossa tulokset on ilmoitettu formaatissa "1.5 1622 1880 1683"
         //
 
-        if (annettuTurnauksenTulos >= 0 && UudenPelaajanLaskenta()) {
+        if (OnkoAnnettuTurnauksenTulos() && UudenPelaajanLaskenta()) {
             //  selo += pistemäärä - ottelut/2 * 200
             // 1 ottelu:
             //    1525 + 0.5 1525 -> tulos 1525    
@@ -204,6 +211,8 @@ public class Selopelaaja {
         // "+1525 =1600 -1611 +1558". Tällöin myös MinSelo ja MaxSelo voidaan selvittää.
         //
         Ottelu ottelu = ottelulista.HaeEnsimmainen(); // vastustajanSelo, ottelunTulos
+        
+        // Kun lista on tyhjä, saadaan ottelun tulos TULOS_MAARITTELEMATON
         while (ottelu.getOttelunTulos() != Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON) {
 
             // päivitä seloa ja tilastoja jokaisen ottelun laskennassa, myös laske Odotustulos
@@ -222,7 +231,7 @@ public class Selopelaaja {
         //
         // HUOM! Seuraava ei toimisi uudella pelaajalla, mutta se erikoistapaus onkin käsitelty aiemmin
         //
-        if (annettuTurnauksenTulos >= 0) {
+        if (OnkoAnnettuTurnauksenTulos()) {
             //
             // Aiemmasta laskennasta tarvitaan Odotustulos
             // apumuuttuja selo, koska sitä tarvitaan kaavassa usein
@@ -280,6 +289,10 @@ public class Selopelaaja {
     {
         int odotustulos1;  // yhden ottelun Odotustulos, lisätään turnauksen odotustulokseen
         int selo;
+
+        // Erikoistapaus
+        if (tulos == Vakiot.OttelunTulos_enum.TULOS_EI_ANNETTU)
+            tulos = Vakiot.OttelunTulos_enum.TULOS_TASAPELI;
 
         // Vanhan pelaajan SELOn laskennassa käytetään odotustulosta ja kerrointa
         //
