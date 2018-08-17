@@ -234,4 +234,47 @@ public class UnitTest3_Laskenta {
         assertEquals(2050,   t.Item2.getUusiSelo());
         assertEquals(162,    t.Item2.getUusiPelimaara());        // 150 + 12 ottelua  = 162
     }    
+    
+    // Testataan, että sallittu minimiselo (1000) käy syötteessä
+    // Testataan, entä jos tulos menee alle minimiselon. Ei ongelmaa.
+    @Test
+    public void LaskettuVahvuuslukuAlleMinimin1()
+    {
+        t = u.Testaa("1000", "0 1100");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(984, t.Item2.getUusiSelo());
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    @Test
+    public void LaskettuVahvuuslukuAlleMinimin2()
+    {
+        t = u.Testaa("1000", "-1100 +1005 -1002");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(985, t.Item2.getUusiSelo());
+        assertEquals(984, t.Item2.getMinSelo());      // laskennan aikainen minimi
+        assertEquals(1007, t.Item2.getMaxSelo());     // laskennan aikainen maksimi
+    }
+    // Testataan, että sallittu maksimiselo (2999) käy syötteessä
+    // Testataan, entä jos tulos menee yli maksimiselon. Ei ongelmaa.
+    @Test
+    public void LaskettuVahvuuslukuYliMaksimin1()
+    {
+        t = u.Testaa("2999", "1 2700");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(3002, t.Item2.getUusiSelo());
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    @Test
+    public void LaskettuVahvuuslukuYliMaksimin2()
+    {
+        t = u.Testaa("2999", "+2700 -2991 +2988");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(3002, t.Item2.getUusiSelo());
+        assertEquals(2992, t.Item2.getMinSelo());     // laskennan aikainen minimi
+        assertEquals(3002, t.Item2.getMaxSelo());     // laskennan aikainen maksimi
+    }    
 }

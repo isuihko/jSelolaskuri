@@ -13,6 +13,8 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Ismo
+ * 
+ * NOTE! More general comments in C# version of this file.
  */
 public class UnitTest1 {
     

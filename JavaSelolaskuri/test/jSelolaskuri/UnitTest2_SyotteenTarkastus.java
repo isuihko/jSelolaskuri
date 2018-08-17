@@ -25,12 +25,28 @@ public class UnitTest2_SyotteenTarkastus {
 
     // Testataan virheellinen syöte, tässä virheellinen oma vahvuusluku
     @Test
-    public void VirheellinenSyoteOmaSELO()
+    public void VirheellinenSyoteOmaSELO1()
     {
         t = u.Testaa("15zz5", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
     }
 
+    // Testataan virheellinen syöte, tässä virheellinen oma vahvuusluku. Oltava vähintään 1000.
+    @Test
+    public void VirheellinenSyoteOmaSELO2()
+    {
+        t = u.Testaa("999", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
+    }
+    // Testataan virheellinen syöte, tässä virheellinen oma vahvuusluku. Oltava enintään 2999.
+    @Test
+    public void VirheellinenSyoteOmaSELO3()
+    {
+        t = u.Testaa("3000", "0", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_OMA_SELO, t.Item1);
+    }
+
+    
     @Test
     public void VirheellinenSyoteOmaSELOtyhja()
     {
@@ -46,6 +62,22 @@ public class UnitTest2_SyotteenTarkastus {
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
+    // Testataan virheellinen syöte, tässä virheellinen vastustajan vahvuusluku (oltava vähintään 1000)
+    @Test
+    public void VirheellinenSyoteVastustajanSELO2()
+    {
+        t = u.Testaa("1525", "", "999", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }
+    // Testataan virheellinen syöte, tässä virheellinen vastustajan vahvuusluku (oltava enintään 2999)
+    @Test
+    public void VirheellinenSyoteVastustajanSELO3()
+    {
+        t = u.Testaa("1525", "", "3000", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }
+
+    
     @Test
     public void VirheellinenSyoteVastustajanSELOtyhja()
     {
@@ -57,7 +89,21 @@ public class UnitTest2_SyotteenTarkastus {
     @Test
     public void VirheellinenSyoteOmaPelimaara()
     {
-        t = u.Testaa("1525", "123456", "1525", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        t = u.Testaa("1525", "123456", "1600", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_PELIMAARA, t.Item1);
+    }
+    // Pelimäärä virheellinen, annettu liian suureksi (asetettu rajoitus 9999)
+    @Test
+    public void VirheellinenSyoteOmaPelimaara2()
+    {
+        t = u.Testaa("1525", "10000", "1600", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
+        assertEquals(Vakiot.SYOTE_VIRHE_PELIMAARA, t.Item1);
+    }
+    // Pelimäärä virheellinen, annettu negatiiviseksi
+    @Test
+    public void VirheellinenSyoteOmaPelimaara3()
+    {
+        t = u.Testaa("1525", "-1", "1600", Vakiot.OttelunTulos_enum.TULOS_VOITTO);
         assertEquals(Vakiot.SYOTE_VIRHE_PELIMAARA, t.Item1);
     }
 
@@ -85,31 +131,33 @@ public class UnitTest2_SyotteenTarkastus {
         assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
     }
 
-    // Annettu isompi pistemäärä (99) kuin mitä on otteluita (12 kpl)
+    // Annettu isompi pistemäärä (199.5) kuin mitä on otteluita (12 kpl).
+    // 199.5 (Vakiot.TURNAUKSEN_TULOS_MAX) on maksi, joka käsitellään turnauksen tuloksena.
+    // Isommat tuloksena annetut luvut, jos ovat alle 1000, käsitellään vastustajan selon virheenä
     @Test
     public void VirheellinenSyoteTurnauksenTulos2()
     {
-        t = u.Testaa("1996", "99 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = u.Testaa("1996", "199.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_TURNAUKSEN_TULOS, t.Item1);
+    }
+
+    // Annettu turnauksen tulos 200, joka on suurempi kuin Vakiot.TURNAUKSEN_TULOS_MAX.
+    // Palautuu ilmoituksena virheellisestä vastustajan selosta, kun ensimmäinen 
+    // luku käsitellään numerona eikä tarkistuksessa voida tietää, kumpaa on tarkoitettu.
+    @Test
+    public void VirheellinenSyoteTurnauksenTulos3()
+    {
+        t = u.Testaa("1996", "200 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }
 
     // Annettu negatiivinen pistemäärä.
     // Palautuu ilmoituksena virheellisestä vastustajan selosta, kun ensimmäinen 
     // luku käsitellään numerona eikä tarkistuksessa voida tietää, kumpaa on tarkoitettu.
     @Test
-    public void VirheellinenSyoteTurnauksenTulos3()
-    {
-        t = u.Testaa("1996", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
-        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
-    }
-
-    // Annettu isompi pistemäärä (150) kuin mitä on otteluita (12 kpl)
-    // Palautuu ilmoituksena virheellisestä vastustajan selosta, kun ensimmäinen 
-    // luku käsitellään numerona eikä tarkistuksessa voida tietää, kumpaa on tarkoitettu.
-    @Test
     public void VirheellinenSyoteTurnauksenTulos4()
     {
-        t = u.Testaa("1996", "150 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        t = u.Testaa("1996", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }    
 }
