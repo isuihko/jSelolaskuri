@@ -286,7 +286,7 @@ public class SelolaskuriOperations {
                     
                     try {
                         syotetty_tulos = Float.parseFloat(tempString);
-                        if (syotetty_tulos >= 0.0F && syotetty_tulos <= 99.5F) {
+                        if (syotetty_tulos >= 0.0F && syotetty_tulos <= Vakiot.TURNAUKSEN_TULOS_MAX) {
                             // HUOM! Jos tuloksessa on desimaalit väärin, esim. 2.37 tai 0,9,
                             //       niin ylimääräiset desimaalit "pyöristyvät" alas -> 2,0 tai 0,5.
                             onko_turnauksen_tulos = true;
