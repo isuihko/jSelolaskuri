@@ -1,6 +1,8 @@
 # jSelolaskuri
 Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop application)
 
+You can find more documents and comments from C# version https://github.com/isuihko/selolaskuri
+
 27.5.2018 Started refactoring and documenting
 
 31.7. - 1.8.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version. Data made hidden and used getters and setters. Added the exactly same unit tests that C# version has (modified to make them work).
@@ -15,11 +17,13 @@ Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop applic
 
 14.8.2018 Testing modifications, simplifications e.g. using default values if some data was not defined. Now also uses enums for thinking time and match result. No changes to operation so not changed version date.
 
+19.8.2018 Updates to CSV format checking and adds new unit tests mostly related to CSV format.
+
 ------
 
 Shakin vahvuusluvun laskenta
 
-30.11.2017 - 12.8.2018 Java, NetBeans IDE 8.2
+30.11.2017 - 19.8.2018 Java, NetBeans IDE 8.2
 
 - 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
 - Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat
