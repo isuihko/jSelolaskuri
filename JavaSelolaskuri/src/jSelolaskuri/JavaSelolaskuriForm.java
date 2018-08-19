@@ -369,7 +369,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 12.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 19.8.2018 github.com/isuihko/jSelolaskuri");
 
         turnauksenTulos_out.setEditable(false);
         turnauksenTulos_out.setFocusable(false);
@@ -1388,7 +1388,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "\r\n" + "      Jos pelimäärä on antamatta, käytetään tyhjää"
                 + "\r\n"
                 + "\r\n" + "   HUOM! CSV-formaatissa annettu ottelu on etusijalla ja lomakkeesta käytetään korkeintaan miettimisaikaa (vain jos se puuttui CSV:stä)."
-                + "\r\n" + "   HUOM! CSV-formaatissa annettuja arvoja käytetään, vaikka oma selo, pelimäärä, miettimisaika tai tulos olisi annettu erikseenkin."
                 + "\r\n"
                 + "\r\n" + "Laskenta suoritetaan klikkaamalla laskenta-painiketta tai painamalla Enter vastustajan SELO-kentässä sekä (jos yksi vastustaja) tuloksen valinta -painikkeilla."
                 + "\r\n"

@@ -442,8 +442,7 @@ public class SelolaskuriOperations {
         String uusi = syote.replaceAll("\\s+", " ");
         // There could still be extra spaces which would not be OK with CSV format
         // E.g. "5 ,1525, 0 , 1.5 1600 1712" -> "5,1525,0,1.5 1600 1712"
-        uusi = uusi.replaceAll(" ,", ",");
-        return uusi.replaceAll(", ", ",");
+        return uusi.replaceAll("\\s?,\\s?", ",");
     }
 
     //

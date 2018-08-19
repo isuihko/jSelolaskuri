@@ -22,6 +22,12 @@ public class UnitTest {
     
     public UnitTest() {
     }
+    
+    @Test
+    public void NotARealTest()
+    {
+        assertEquals(1, 1); // Added something so that Run test does not give an error
+    }
 
     private SelolaskuriOperations so = new SelolaskuriOperations();
     
