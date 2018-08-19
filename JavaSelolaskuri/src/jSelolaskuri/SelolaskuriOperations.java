@@ -23,6 +23,7 @@ import java.util.List;
 // Public:
 //      HaeViimeksiLasketutTulokset  - get the latest calculated selo and game count
 //      TarkistaSyote                - check the input data like SELO and number of games, opponents and results
+//      SiistiVastustajatKentta      - poista ylimääräiset välilyönnit Vastustajat-kentästä
 //      SelvitaCSV                   - erota CSV-formaatin merkkijonosta syotetiedot (miettimisaika, oma selo, ...)
 //      SelvitaMiettimisaikaCSV      - muuta CSV-formaatissa annettu merkkijono miettimisajaksi
 //      SelvitaTulosCSV              - muuta CSV-formaatissa annettu merkkijono ottelun tulokseksi
@@ -101,8 +102,8 @@ public class SelolaskuriOperations {
                 break;
             syotteet.setAlkuperainenPelimaara(tulos);  // Voi olla PELIMAARA_TYHJA tai numero >= 0
 
-
-            //    JOS YKSI OTTELU,   saadaan sen yhden vastustajan vahvuusluku, eikä otteluja ole listassa
+            //    JOS YKSI OTTELU,   saadaan sen yhden vastustajan vahvuusluku, eikä otteluja ole listassa.
+            //      ottelumäärän tarkistamisen jälkeen tässä tehdään yhden ottelun lista
             //    JOS MONTA OTTELUA, palautuu 0 ja ottelut on tallennettu tuloksineen listaan
             if ((tulos = TarkistaVastustajanSelo(syotteet.getOttelut(), syotteet.getVastustajienSelot_str())) < Vakiot.SYOTE_STATUS_OK)
                 break;
@@ -429,13 +430,34 @@ public class SelolaskuriOperations {
         // Palauta virhekoodi tai selvitetty yksittäisen vastustajan selo (joka on 0, jos ottelut listassa)
         return virhekoodi < 0 ? virhekoodi : vastustajanSelo;       
     }
-        //
-        // Used from the form. If there are only 2 or 3 values in CSV format, also thinking time from the form is needed
-        //
+
+    // Vastustajat-kentän siistiminen
+    //
+    // Jo tehty .trim() eli poistettu alusta ja lopusta välilyönnit
+    // Poista ylimääräiset välilyönnit, korvaa yhdellä  "     " -> " "
+    // Poista myös mahdolliset välilyönnit pilkkujen molemmilta puolilta: " , " ja ", " -> ","
+    public String SiistiVastustajatKentta(String syote)
+    {
+        // poista ylimääräiset välilyönnit, korvaa yhdellä
+        String uusi = syote.replaceAll("\\s+", " ");
+        // There could still be extra spaces which would not be OK with CSV format
+        // E.g. "5 ,1525, 0 , 1.5 1600 1712" -> "5,1525,0,1.5 1600 1712"
+        uusi = uusi.replaceAll(" ,", ",");
+        return uusi.replaceAll(", ", ",");
+    }
+
+    //
+    // Used from the form. If there are only 2 or 3 values in CSV format, also thinking time from the form is needed.
+    //
+    // Used from the unit tests for CSV. If there are only 2 or 3 values in CSV format, default thinking time in parameter aika is set to 90 minutes.
+    //       
     public Syotetiedot SelvitaCSV(Vakiot.Miettimisaika_enum aika, String csv)
     {       
+        // poista ylimääräiset välilyönnit, korvaa yhdellä
+        // poista myös mahdolliset välilyönnit pilkkujen molemmilta puolilta
+        csv = SiistiVastustajatKentta(csv.trim());
         String[] data = csv.split(",");
-           
+             
         if (data.length == 5) {
             return new Syotetiedot(this.SelvitaMiettimisaikaCSV(data[0]), data[1], data[2], data[3], this.SelvitaTulosCSV(data[4]));
         } else if (data.length == 4) {
@@ -451,6 +473,7 @@ public class SelolaskuriOperations {
     
   
     // Miettimisaika, vain minuutit, esim. "5" tai "90"
+    // Oltava kokonaisluku ja vähintään 1 minuutti
     public Vakiot.Miettimisaika_enum SelvitaMiettimisaikaCSV(String s)
     {
         Vakiot.Miettimisaika_enum aika = Vakiot.Miettimisaika_enum.MIETTIMISAIKA_MAARITTELEMATON;
@@ -477,8 +500,8 @@ public class SelolaskuriOperations {
     }
     
     // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
-    // Toistaiseksi tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää tuloksia
-    // pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
+    // Toistaiseksi CSV-formaatin tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää 
+    // tuloksia pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
     public Vakiot.OttelunTulos_enum SelvitaTulosCSV(String s)
     {
         Vakiot.OttelunTulos_enum tulos = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;

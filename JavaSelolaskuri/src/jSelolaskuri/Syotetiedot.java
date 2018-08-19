@@ -89,8 +89,9 @@ public class Syotetiedot {
         if (vastustajat == null) {  // jComboBox.getSelectedItem() could had been null
             vastustajat = "";
         } else if (doTrim) {
-            // poista sanojen väleistä ylimääräiset välilyönnit            
-            vastustajat = vastustajat.trim().replaceAll("\\s+", " ");
+            // poista sanojen väleistä ylimääräiset välilyönnit     
+            SelolaskuriOperations so = new SelolaskuriOperations();
+            vastustajat = so.SiistiVastustajatKentta(vastustajat.trim());
         }
         this.VastustajienSelot_str      = vastustajat;
         this.OttelunTulos               = tulos;

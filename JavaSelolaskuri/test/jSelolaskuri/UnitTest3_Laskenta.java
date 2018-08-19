@@ -15,12 +15,11 @@ import org.junit.Test;
  */
 public class UnitTest3_Laskenta {
     
-    private final UnitTest1 u = new UnitTest1();  
+    private final UnitTest u = new UnitTest();  
     private Testitulokset t;
     
     /**
-     * Laskennan testauksia erilaisin syöttein (oma selo, vastustajat, ottelutulokset, ...)
-     * Virhestatuksien testauksia erilaisin virhein
+     * Laskennan testauksia erilaisin syöttein(oma selo, vastustajat, ottelutulokset, ...)
      */
     @Test
     public void UudenPelaajanOttelutYksittain() {
@@ -166,8 +165,9 @@ public class UnitTest3_Laskenta {
         assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
     }
 
+    // Seuraavan kahden laskennan tarkistus: http://shakki.kivij.info/performance_calculator.shtml
     @Test
-    public void TulosNumeronaEnnenSeloa()
+    public void TulosNumeronaEnnenSeloaDesimPiste()
     {
         t = u.Testaa("1800", "1.0 1900");
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
@@ -175,6 +175,34 @@ public class UnitTest3_Laskenta {
         assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
     }
 
+    @Test
+    public void TulosNumeronaEnnenSeloaPilkku()
+    {
+        t = u.Testaa("1800", "1,0 1900");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1823,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
+    }
+
+    // Seuraavan kahden laskennan tarkistus: http://shakki.kivij.info/performance_calculator.shtml
+    @Test
+    public void TulosNumeronaEnnenSeloaDesimPiste2()
+    {
+        t = u.Testaa("1800", "0.5 1900");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1805,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
+    }
+
+    @Test
+    public void TulosNumeronaEnnenSeloaPilkku2()
+    {
+        t = u.Testaa("1800", "0,5 1900");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1805,   t.Item2.getUusiSelo());
+        assertEquals(36,     t.Item2.getOdotustulos());   // odotustulos 0,36*100
+    }    
+    
     // Merkkijonoissa ylimääräisiä välilyöntejä
     @Test
     public void UudenPelaajanOttelutValilyonteja()
@@ -188,7 +216,7 @@ public class UnitTest3_Laskenta {
     }
 
     @Test
-    public void PikashakinVahvuuslukuTurnauksesta()
+    public void PikashakinVahvuuslukuTurnauksestaDesimPiste()
     {
         t = u.Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "1996", "10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
@@ -202,6 +230,77 @@ public class UnitTest3_Laskenta {
         assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
     }
 
+    @Test
+    public void PikashakinVahvuuslukuTurnauksestaPilkku()
+    {
+        t = u.Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "1996", "10,5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2033,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());  // 
+        assertEquals(12,     t.Item2.getVastustajienLkm());           // 12 vastustajaa eli ottelua
+        assertEquals(840,    t.Item2.getOdotustulos());              // odotustulos 8,40*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+
+    // Esimerkki Joukkuepikashakin SM 2018 alkukilpailut, alkukilpailuryhmä C  4.8.2018, LauttSSK 1 pöytä 1
+    // Kilpailuryhmä C: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+    // Kaikki täsmää
+    @Test
+    public void PikashakinVahvuuslukuTurnauksesta2()
+    {
+        t = u.Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "2180", "2054", "14.5 1914 2020 1869 2003 2019 1979 2131 2161 2179 2392 1590 1656 1732 1944 1767 1903 1984 2038 2083 2594 2324 1466 1758");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2148, t.Item2.getUusiSelo());       // Saadaan sama tulos kuin shakkiliiton sivulla
+        assertEquals(2077, t.Item2.getUusiPelimaara());  // pelimäärä
+        assertEquals((int)(14.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1979, t.Item2.getTurnauksenKeskivahvuus());  // Summa 45506 / 23 = 1978,521739 pyöristys 1979
+        assertEquals(23, t.Item2.getVastustajienLkm());           // 23 vastustajaa eli ottelua
+        assertEquals(1624, t.Item2.getOdotustulos());              // odotustulos 16,24*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    // Esimerkki Joukkuepikashakin SM 2018 alkukilpailut, alkukilpailuryhmä C  4.8.2018, LauttSSK 1 pöytä 4
+    // Kilpailuryhmä C: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+    // Kaikki muu täsmää paitsi vahvuusluvun laskennassa yhden pisteen ero viralliseen tulokseen
+    @Test
+    public void PikashakinVahvuuslukuTurnauksesta3()
+    {
+        t = u.Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "2045", "1225", "19.5 1548 1560 1699 1737 1735 1880 1856 2019 2102 2177 1539 1531 1672 1592 1775 1842 1847 1905 1970 2308 1988 1454 1481");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2082, t.Item2.getUusiSelo());       // Oikea tulos 2083, tässä laskettu tulos 2082
+        assertEquals(1248, t.Item2.getUusiPelimaara());  // pelimäärä
+        assertEquals((int)(19.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1792, t.Item2.getTurnauksenKeskivahvuus());  // Summa 41217 / 23 = 1792.043
+        assertEquals(23, t.Item2.getVastustajienLkm());           // 23 vastustajaa eli ottelua
+        assertEquals(1740, t.Item2.getOdotustulos());              // odotustulos 17,40*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    // Esimerkki Joukkuepikashakin SM 2018 sijoituskilpailut 5.8.2018, sijoitusryhmä C, LauttSSK 4 pöytä 4
+    // Sijoitusryhmä 5: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+    // Kaikki muu täsmää paitsi vahvuusluvun laskennassa yhden pisteen ero viralliseen tulokseen
+    @Test
+    public void PikashakinVahvuuslukuTurnauksesta4()
+    {
+        t = u.Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_ENINT_10MIN, "1262", "11 1623 1591 1318 1560 1493 1417 1343 1493 1524 1227 1716 1490 1454 1479 1329 1429 1444 1289 1576 1445 1280");
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1344, t.Item2.getUusiSelo());       // Oikea tulos 1345, tässä laskettu tulos 1344
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärä
+        assertEquals((int)(11F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1453, t.Item2.getTurnauksenKeskivahvuus());  // Summa 30520 / 21 = 1453.333
+        assertEquals(21, t.Item2.getVastustajienLkm());           // 21 vastustajaa eli ottelua
+        assertEquals(564, t.Item2.getOdotustulos());              // odotustulos 5,64*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }
+
+    
     // Testataan eri pelimäärillä, ettei tulos riipu pelimäärästä silloin kun ei ole uuden pelaajan laskenta
     @Test
     public void PikashakinVahvuuslukuTurnauksestaPelimaaralla()
@@ -236,6 +335,7 @@ public class UnitTest3_Laskenta {
     }    
     
     // Testataan, että sallittu minimiselo (1000) käy syötteessä
+    // Testataan, että tulos 0 on OK turnauksen tuloksena (pienin sallittu tulos).
     // Testataan, entä jos tulos menee alle minimiselon. Ei ongelmaa.
     @Test
     public void LaskettuVahvuuslukuAlleMinimin1()

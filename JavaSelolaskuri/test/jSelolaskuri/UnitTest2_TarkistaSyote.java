@@ -13,9 +13,9 @@ import org.junit.Test;
  *
  * @author Ismo
  */
-public class UnitTest2_SyotteenTarkastus {
+public class UnitTest2_TarkistaSyote {
     
-    private final UnitTest1 u = new UnitTest1();  
+    private final UnitTest u = new UnitTest();  
     private Testitulokset t;
     
 

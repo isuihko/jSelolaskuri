@@ -15,10 +15,12 @@ import static org.junit.Assert.*;
  * @author Ismo
  * 
  * NOTE! More general comments in C# version of this file.
+ * 
+ *  This has general Testaa() routine (with a few overloads) which are used by other UnitTest modules.
  */
-public class UnitTest1 {
+public class UnitTest {
     
-    public UnitTest1() {
+    public UnitTest() {
     }
 
     private SelolaskuriOperations so = new SelolaskuriOperations();
@@ -44,9 +46,10 @@ public class UnitTest1 {
         Selopelaaja tulokset = null;
         
         if ((status = so.TarkistaSyote(syotetiedot)) == Vakiot.SYOTE_STATUS_OK) {
+            // If the input was OK, continue and calculate
+            // If wasn't, then tulokset is left null and error status will be returned
             tulokset = so.SuoritaLaskenta(syotetiedot);
-        }
-        
+        }        
         return new Testitulokset(status, tulokset);
     }
     
@@ -86,12 +89,6 @@ public class UnitTest1 {
         return Testaa(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, selo, "", vastustajat, Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON);
     }
         
-    // CSV 
-    // 90,1525,0,1725,1
-    // Jos 5 merkkijonoa:  minuutit,selo,pelimäärä,vastustajat,jos_yksi_selo_niin_tulos
-    // Jos 4: ottelun tulosta ei anneta, käytetään TULOS_MAARITTELEMATON
-    // Jos 3: Myös miettimisaika on antamatta, käytetään oletuksena MIETTIMISAIKA_VAH_90MIN
-    // Jos 2: Myös pelimäärä on antamatta, käytetään oletuksena tyhjää ""
     public Testitulokset Testaa(String csv)
     {
         Syotetiedot syotetiedot;
@@ -103,6 +100,9 @@ public class UnitTest1 {
         syotetiedot = so.SelvitaCSV(Vakiot.Miettimisaika_enum.MIETTIMISAIKA_VAH_90MIN, csv);
 
         if (syotetiedot == null) {
+            // Possible errors:
+            //   too many commas, e.g. 
+            //   one comma which tells the tournamet result or single match result, so it can't be CSV format
             status = Vakiot.SYOTE_VIRHE_CSV_FORMAT;
         } else if ((status = so.TarkistaSyote(syotetiedot)) == Vakiot.SYOTE_STATUS_OK) {
 

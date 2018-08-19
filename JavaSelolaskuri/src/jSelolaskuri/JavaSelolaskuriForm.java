@@ -114,6 +114,23 @@ import java.io.IOException;
  *                koska kentästä saattoi tulla Pastea käytettäessä leveämpi kuin ikkuna
  *              - Muutettu menun otsikko: File -> Menu
  * 
+ * 15.8.2018        - Yksikkötestausta muutettu, testitapaukset jaettu moduuleihin testattavan asian mukaan
+ *                  - CSV-formaatin testaukseen muutos: merkkijonon alkukäsittely tehdään uudella yleisellä rutiinilla,
+ *                    joka on SelolaskuriOperations-luokassa ja jota nyt myös käytetään tietoja haettaessa lomakkeelta.
+ *                    Nyt merkkijonon jakaminen osiin saadaan testaukseen.
+ *
+ * 19.8.2018        - CSV-formaatin testit jaettu kahteen moduuliin:
+ *                       UnitTest4_TarkistaCSV:  virheellinen data
+ *                       UnitTest5_Laskenta:     kelvollinen data, josta lasketaan
+ *                  - CSV-formaatin tarkistuksia lisätty. Poistetaan ylimääräiset välilyönnit alusta ja lopusta, sekä pilkkujen ympäriltä:
+ *                        "   90 , 1525 ,  20  ,    2.5 1505 1600    1611 1558   "  -> "90,1525,20,2.5 1505 1600 1611 1558"
+ *                    Siistitty versio tallennetaan vastustajat-historiaan. Tällöin samasisältöinen, mutta eri määrät välilyöntejä, ei tallennu
+ *                    historiaan kuin kerran.
+ *                    Aiemmin laskenta epäonnistui, jos formaatissa oli vastustajia edeltävän pilkun jälkeen välilyönti.
+ *                  - Välilyöntien poisto (using Regex) luokassa SelolaskuriOperation (aiemmin oli lomake ja unit test)
+ *                  - Paste: Tehdään ylimääräisten välilyöntien poisto ennen tallennusta.
+ *                  - Lisätty testitapauksia laskentaan em. korjauksien varmistamiseen ja
+ *                    nyt yhteensä 65 testiä.
  * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
@@ -763,14 +780,16 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         // jComboBox.getSelectedItem() could had been null
         if (s != null) {
             s = s.trim();
-            vastustajanSelo_jComboBox.setSelectedItem(s);  // XXX: CHECK THIS, CLEAN CODE
+            vastustajanSelo_jComboBox.setSelectedItem(s);  // XXX: Update selection
         }
-        
-        
+
         // process opponents field and check if CSV format was used                
         
         if (s != null && !s.isEmpty()) {
-            vastustajanSelo_jComboBox.setSelectedItem(s.trim().replaceAll("\\s+", " "));
+            // poista ylimääräiset välilyönnit, korvaa yhdellä
+            // poista myös välilyönnit pilkun molemmilta puolilta, jos on CSV-formaatti           
+            // Update selection with cleaner version of the field
+            vastustajanSelo_jComboBox.setSelectedItem(so.SiistiVastustajatKentta(s)); // .Trim jo tehty
 
             // Tarkista, onko csv ja jos on, niin unohda muut syötteet
             // Paitsi jos on väärässä formaatissa, palautetaan null ja kutsuvalla tasolla virheilmoitus
@@ -782,10 +801,23 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // Jos 3: miettimisaikaa ei anneta, käytetään lomakkeelta valittua miettimisaikaa
             // Jos 2: pelimäärää ei anneta, käytetään oletuksena tyhjää ""
             //
-            String csv = (String)vastustajanSelo_jComboBox.getSelectedItem();
+            //
+            // Note that string in the following format is not CSV (comma can be used in tournament result)
+            //    "tournamentResult selo1 selo2 ..." e.g. "2,5 1505 1600 1611 1558" or "100,5 1505 1600 1611 1558 ... "
+            //
+            // But that checking should not affect CSV format "thinking time,selo,..." e.g. "5,1525,0,1505 1600 ..."
+            //      or "own selo,opponent selo with result" e.g. "1525,+1505"
+            //      or "own selo,opponent selo,single match result" e.g. "1525,1505,0.5" <- Here must use decimal point!!!
+            //
+            // So check that if there is just one comma, so two values, the length of the first value must be at least 4 (length of selo)
+
+            String csv = (String)vastustajanSelo_jComboBox.getSelectedItem(); // GET THE UPDATED VALUE
             if (csv.contains(",")) {
-                // The thinking time might be needed from the form if there are 2 or 3 values in CSV format
-                return so.SelvitaCSV(HaeMiettimisaika(), csv);
+                String[] tmp = csv.split(",");
+                if (tmp.length != 2 || (tmp.length == 2 && tmp[0].trim().length() >= 4)) {
+                    // The thinking time might be needed from the form if there are 2 or 3 values in CSV format
+                    return so.SelvitaCSV(HaeMiettimisaika(), csv);                    
+                }
             }
         }
         
@@ -837,6 +869,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         if (LaskeOttelunTulosLomakkeelta()) {
             // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
             // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
+            //
+            // Tekstistä on poistettu ylimääräiset välilyönnit ennen tallennusta            
             // HUOM! Tämä sama koodi on myös kentän KeyListener():ssä, joka nappaa Enterin
             String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
             vastustajanSelo_jComboBox.setSelectedIndex(-1);
@@ -1314,7 +1348,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // Annettu teksti talteen (jos ei ennestään ollut) -> Drop-down Combo box
             // Tallennus kun klikattu Laske SELO tai painettu enter vastustajan selo-kentässä
             // HUOM! Tämä sama koodi on myös Laske-painikkeen käsittelyssä
-            // String s = (String)vastustajanSelo_jComboBox.getSelectedItem();
+            s = (String)vastustajanSelo_jComboBox.getSelectedItem();  // GET the updated value
             vastustajanSelo_jComboBox.setSelectedIndex(-1);            
             vastustajanSelo_jComboBox.setSelectedItem(s);
             if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
@@ -1343,15 +1377,17 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "\r\n" + "-Oma pelimäärä, joka tarvitaan vain jos olet pelannut enintään 10 peliä. Tällöin käytetään uuden pelaajan laskentakaavaa."
                 + "\r\n" + "-Vastustajien vahvuusluvut ja tulokset jollakin neljästä tavasta:"
                 + "\r\n" + "   1) Yhden vastustajan vahvuusluku (esim. 1922) ja lisäksi ottelun tulos 1/0,5/0 nuolinäppäimillä tai hiirellä. Laskennan tulos päivittyy valinnan mukaan."
-                + "\r\n" + "   2) Vahvuusluvut tuloksineen, esim. +1525 =1600 -1611 +1558, jossa + voitto, = tasan ja - tappio"
-                + "\r\n" + "   3) Turnauksen pistemäärä ja vastustajien vahvuusluvut, esim. 2.5 1525 1600 1611 1558"
+                + "\r\n" + "   2) Vahvuusluvut tuloksineen, esim. +1505 =1600 -1611 +1558, jossa + voitto, = tasan ja - tappio"
+                + "\r\n" + "   3) Turnauksen pistemäärä ja vastustajien vahvuusluvut, esim. 2.5 1505 1600 1611 1558, voi käyttää myös desimaalipilkkua 1,5 1505 1600 1611 1558"
                 + "\r\n" + "   4) CSV eli pilkulla erotetut arvot, jossa 2, 3, 4 tai 5 kenttää: HUOM! Käytä tuloksissa desimaalipistettä, esim. 0.5 tai 10.5!"
-                + "\r\n" + "           2: oma selo,ottelut   esim. 1712,2.5 1525 1600 1611 1558 tai 1712,+1525"
-                + "\r\n" + "           3: oma selo,pelimaara,ottelut esim. 1525,0,+1525 +1441"
+                + "\r\n" + "           2: oma selo,ottelut   esim. 1712,2.5 1505 1600 1611 1558 tai 1712,+1505  HUOM! Desimaalipiste!"
+                + "\r\n" + "           3: oma selo,pelimaara,ottelut esim. 1525,0,+1505 +1441"
                 + "\r\n" + "           4: minuutit,oma selo,pelimaara,ottelut  esim. 90,1525,0,+1525 +1441"
                 + "\r\n" + "           5: minuutit,oma selo,pelimaara,ottelu,tulos esim. 90,1683,2,1973,0 (jossa tasapeli 1/2 tai 0.5)"
                 + "\r\n" + "      Jos miettimisaika on antamatta, käytetään ikkunasta valittua"
                 + "\r\n" + "      Jos pelimäärä on antamatta, käytetään tyhjää"
+                + "\r\n"
+                + "\r\n" + "   HUOM! CSV-formaatissa annettu ottelu on etusijalla ja lomakkeesta käytetään korkeintaan miettimisaikaa (vain jos se puuttui CSV:stä)."
                 + "\r\n" + "   HUOM! CSV-formaatissa annettuja arvoja käytetään, vaikka oma selo, pelimäärä, miettimisaika tai tulos olisi annettu erikseenkin."
                 + "\r\n"
                 + "\r\n" + "Laskenta suoritetaan klikkaamalla laskenta-painiketta tai painamalla Enter vastustajan SELO-kentässä sekä (jos yksi vastustaja) tuloksen valinta -painikkeilla."
@@ -1439,6 +1475,11 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     // Ei tarkisteta, että ovatko vastustajat/tulokset oikeassa formaatissa.
     // Vain tarkistukset, että pituus on vähintään seloluvun pituus (eli 4), eikä tule kahta samaa riviä.
     // Ei saa olla myöskään liian pitkä rivi eikä liian montaa riviä.
+    //
+    // Osa syötteestä on tarkoitus ajaa CSV-formaatissa (silloin täydellinen tai vain miettimisaika otetaan lomakkeelta)
+    // Ja osa on tarkoitettu käytettäväksi erillisesti annetun miettimisajan, oman vahvuusluvun ja pelimäärän kanssa.
+    //
+    // Tekstistä poistetaan ylimääräiset välilyönnit.    
     private void pasteVastustajat_jMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteVastustajat_jMenuItemActionPerformed
         // Haetaan data leikekirjasta
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -1463,7 +1504,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             // Rivin on aloitettava numerolla (eli selo tai miettimisaika) tai ottelutuloksella (+, - tai =)
             leikekirja = leikekirjaData.split("\n");
             for (String rivi : leikekirja) {
-                String rivi2 = rivi.trim();
+                // poista ylimääräiset välilyönnit ennen tarkistusta ja mahdollista tallennusta
+                String rivi2 = so.SiistiVastustajatKentta(rivi.trim());
 
                 if (rivi2.length() >= Vakiot.SELO_PITUUS && rivi2.length() <= Vakiot.LEIKEKIRJA_MAX_RIVINPITUUS &&
                    (rivi2.charAt(0) == '+' || rivi2.charAt(0) == '-' || rivi2.charAt(0) == '=' || (rivi2.charAt(0) >= '0' && rivi2.charAt(0) <= '9')))
@@ -1471,10 +1513,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                     vastustajanSelo_jComboBox.setSelectedIndex(-1);
                     vastustajanSelo_jComboBox.setSelectedItem(rivi2);
                     if (vastustajanSelo_jComboBox.getSelectedIndex() < 0) {
+                        // vanhat tiedot poistetaan vain, jos on kelvollista lisättävää
                         if (lisatytRivit == 0) {
                             TyhjennaVastustajat();
                             vastustajanSelo_jComboBox.addItem("");  // XXX:  to be shown first! (not counted)
                         }
+                        // on poistanut ylimääräiset välilyönnit ennen tallennusta
                         vastustajanSelo_jComboBox.addItem(rivi2);
                         if (++lisatytRivit >= Vakiot.LEIKEKIRJA_MAX_RIVIMAARA)
                             break;
