@@ -19,11 +19,13 @@ You can find more documents and comments from C# version https://github.com/isui
 
 19.8.2018 Updates to CSV format checking and adds new unit tests mostly related to CSV format.
 
+20.8.2018 Adds usage of half character "1/2" in chess results and new unit tests for that.
+
 ------
 
 Shakin vahvuusluvun laskenta
 
-30.11.2017 - 19.8.2018 Java, NetBeans IDE 8.2
+30.11.2017 - 20.8.2018 Java, NetBeans IDE 8.2
 
 - 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
 - Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat
