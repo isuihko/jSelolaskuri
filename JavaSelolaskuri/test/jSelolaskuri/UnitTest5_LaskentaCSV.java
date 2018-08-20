@@ -47,7 +47,33 @@ public class UnitTest5_LaskentaCSV {
         assertEquals(1441,   t.Item2.getTurnauksenKeskivahvuus());
         assertEquals(84,     t.Item2.getOdotustulos());               // 0,84*100
     }
+
+    @Test
+    public void CSV_TasapeliOttelustaUusiPelaaja()
+    {
+        t = u.Testaa("90,1525,0,1812,0.5");
+        assertNotNull(t);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1812,   t.Item2.getUusiSelo());
+        assertEquals(1,      t.Item2.getUusiPelimaara());           // uusi pelimäärä 0+1 = 1
+        assertEquals((int)(0.5 * 2),  t.Item2.getTurnauksenTulos());
+        assertEquals(1812,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(16,     t.Item2.getOdotustulos());  
+    }
+    @Test
+    public void CSV_TasapeliOttelustaUusiPelaaja2()
+    {
+        t = u.Testaa("90,1525,0,1812,½");
+        assertNotNull(t);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1812,   t.Item2.getUusiSelo());
+        assertEquals(1,      t.Item2.getUusiPelimaara());           // uusi pelimäärä 0+1 = 1
+        assertEquals((int)(0.5 * 2),  t.Item2.getTurnauksenTulos());
+        assertEquals(1812,   t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(16,     t.Item2.getOdotustulos());  
+    }
     
+    // Tarkistettu http://shakki.kivij.info/performance_calculator.shtml    
     @Test
     public void CSV_TurnauksenLaskenta()
     {
@@ -62,7 +88,21 @@ public class UnitTest5_LaskentaCSV {
         assertEquals(4, t.Item2.getVastustajienLkm());
         assertEquals(176, t.Item2.getOdotustulos());              // 1,76*100  odotustulos palautuu 100-kertaisena
     }
-
+    
+    @Test
+    public void CSV_TurnauksenLaskentaPuolikas()
+    {
+        t = u.Testaa("90,1525,20,2½ 1505 1600 1611 1558");
+        assertNotNull(t);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1559, t.Item2.getUusiSelo());                // uusi vahvuusluku
+        assertEquals(24, t.Item2.getUusiPelimaara());             // uusi pelimäärä 0+1 = 1
+        assertEquals((int)(2.5F * 2), t.Item2.getTurnauksenTulos());     // tulos voitto kaksinkertaisena
+        // assertEquals(1568, t.Item2.getTurnauksenKeskivahvuus());  // 1568,5 -> Round 1569
+        assertEquals(1569, t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(4, t.Item2.getVastustajienLkm());
+        assertEquals(176, t.Item2.getOdotustulos());              // 1,76*100  odotustulos palautuu 100-kertaisena
+    }
 
     @Test
     public void CSV_TurnauksenLaskentaValilyonnit1()
@@ -79,6 +119,21 @@ public class UnitTest5_LaskentaCSV {
         assertEquals(176, t.Item2.getOdotustulos());              // 1,76*100  odotustulos palautuu 100-kertaisena
     }
 
+    @Test
+    public void CSV_TurnauksenLaskentaValilyonnit1Puolikas()
+    {
+        t = u.Testaa("    90   ,   1525,    20,    2½    1505    1600 1611 1558   ");    
+        assertNotNull(t);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(1559, t.Item2.getUusiSelo());                // uusi vahvuusluku
+        assertEquals(24, t.Item2.getUusiPelimaara());             // uusi pelimäärä 0+1 = 1
+        assertEquals((int)(2.5F * 2), t.Item2.getTurnauksenTulos());     // tulos voitto kaksinkertaisena
+        // assertEquals(1568, t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(1569, t.Item2.getTurnauksenKeskivahvuus());
+        assertEquals(4, t.Item2.getVastustajienLkm());
+        assertEquals(176, t.Item2.getOdotustulos());              // 1,76*100  odotustulos palautuu 100-kertaisena
+    }        
+    
     @Test
     public void CSV_TurnauksenLaskentaValilyonnit2()
     {
@@ -147,7 +202,7 @@ public class UnitTest5_LaskentaCSV {
         t = u.Testaa("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertNotNull(t);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
-        assertEquals(2033,   t.Item2.getUusiSelo());
+        assertEquals(2034,   t.Item2.getUusiSelo());  // tarkista, oliko 2033 (yhden pisteen virhe laskennassa mahdollinen)
         assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
         assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
         assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());  // 
@@ -163,6 +218,24 @@ public class UnitTest5_LaskentaCSV {
     public void CSV_VahvuuslukuTurnauksesta()
     {
         t = u.Testaa("1996,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        assertNotNull(t);
+        assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
+        assertEquals(2050,   t.Item2.getUusiSelo());
+        assertEquals(Vakiot.PELIMAARA_TYHJA, t.Item2.getUusiPelimaara());  // pelimäärää ei laskettu
+        assertEquals((int)(10.5F * 2), t.Item2.getTurnauksenTulos());
+        assertEquals(1827,   t.Item2.getTurnauksenKeskivahvuus());  // 
+        assertEquals(12,     t.Item2.getVastustajienLkm());           // 12 vastustajaa eli ottelua
+        assertEquals(840,    t.Item2.getOdotustulos());              // odotustulos 8,40*100
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMinSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+        assertEquals(t.Item2.getUusiSelo(), t.Item2.getMaxSelo());     // selo laskettu kerralla, sama kuin UusiSelo
+    }  
+    
+    // Kuten edellä CSV_PikashakinVahvuuslukuTurnauksesta(), mutta ei anneta miettimisaikaa 5 vaan käytetään oletusta 90 min -> eri tulos
+    // Tässä voidaan jättää myös oma pelimäärä antamatta kokonaan. Edellisessä testitapauksessa annettu tyhjä.
+    @Test
+    public void CSV_VahvuuslukuTurnauksestaPuolikas()
+    {
+        t = u.Testaa("1996,10½ 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertNotNull(t);
         assertEquals(Vakiot.SYOTE_STATUS_OK, t.Item1);
         assertEquals(2050,   t.Item2.getUusiSelo());

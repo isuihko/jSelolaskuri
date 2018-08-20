@@ -254,10 +254,10 @@ public class Selopelaaja {
                 // Odotustulos on kokonaisluku ja pitää jakaa 100:lla
                 if ((annettuTurnauksenTulos / 2F) > (Odotustulos / 100F)) {
                     UusiSelo =
-                        (int)(vanha + 200 - 200 * Math.pow(Math.E, (Odotustulos / 100F - annettuTurnauksenTulos / 2F) / 10F));
+                        (int)Math.round(vanha + 200.0 - 200.0 * Math.pow(Math.E, (Odotustulos / 100.0 - annettuTurnauksenTulos / 2.0) / 10.0));
                 } else {
                     UusiSelo =
-                        (int)(vanha - 200 + 200 * Math.pow(Math.E, (annettuTurnauksenTulos / 2F - Odotustulos / 100F) / 10F));
+                        (int)Math.round(vanha - 200.0 + 200.0 * Math.pow(Math.E, (annettuTurnauksenTulos / 2.0 - Odotustulos / 100.0) / 10.0));
                 }
             } else {
                 //

@@ -132,6 +132,13 @@ import java.io.IOException;
  *                  - Lisätty testitapauksia laskentaan em. korjauksien varmistamiseen ja
  *                    nyt yhteensä 65 testiä.
  * 
+ * 20.8.2018        - C#-version Math.Round-säätöjä ei tarvittu täällä, koska menee oikein!
+ *                  - ½ (alt - numeerisesta näppäimistöstä 171) on sallittu yksittäisen ottelun tuloksessa CSV-formaatissa
+ *                  - Myös turnauksen tuloksessa voidaan käyttää puolikasta, esim. 10½
+ *                  - Lomakkeeseen vaihdettu tasapelibuttonin teksti 1/2 = tasapeli  ->  ½ = tasapeli
+ *                  - Lisää testausta, mm. ½:n käyttö. Nyt 76 testiä.
+ *
+ * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
  *        aina kun keksin, miten asioita kannattaa tehdä.
@@ -148,7 +155,7 @@ import java.io.IOException;
 //      Oma pelimäärä    : tyhjä
 //      Vastustajan PELO : 10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684
 // Tulos
-//      Uusi PELO        : 2033 +37 (jos lasketaan miettimisajalla väh. 90 min, saadaan tulos 2050 +54)
+//      Uusi PELO        : 2034 +38 (jos lasketaan miettimisajalla väh. 90 min, saadaan tulos 2050 +54)
 //
 // Uuden pelaajan vahvuusluvun laskenta turnauksesta
 //      Miettimisaika    : väh. 90 min.
@@ -369,7 +376,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setText("Java 19.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 20.8.2018 github.com/isuihko/jSelolaskuri");
 
         turnauksenTulos_out.setEditable(false);
         turnauksenTulos_out.setFocusable(false);
@@ -520,7 +527,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
             }
         });
 
-        tulosTasapeli_btn.setText("1/2 = tasapeli");
+        tulosTasapeli_btn.setText("½ = tasapeli");
         tulosTasapeli_btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tulosTasapeli_btnActionPerformed(evt);
@@ -1309,6 +1316,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         vastustajanSelo_jComboBox.addItem("");  // to be shown first!
         
         vastustajanSelo_jComboBox.addItem("5,1996,,10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
+        vastustajanSelo_jComboBox.addItem("5,1996,,10½ 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         // Also Miettimisaika enint. 10 min, nykyinen SELO 1996, pelimäärä tyhjä
         vastustajanSelo_jComboBox.addItem("10.5 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");  
                         
@@ -1321,7 +1329,9 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         vastustajanSelo_jComboBox.addItem("1973");
         
         vastustajanSelo_jComboBox.addItem("90,1713,3,1718,1");
-        }
+        
+        vastustajanSelo_jComboBox.addItem("90,1713,3,1718,½");
+    }
     
     private void vastustajanSelo_jComboBox_KasitteleEnter()
     {
@@ -1378,12 +1388,12 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "\r\n" + "-Vastustajien vahvuusluvut ja tulokset jollakin neljästä tavasta:"
                 + "\r\n" + "   1) Yhden vastustajan vahvuusluku (esim. 1922) ja lisäksi ottelun tulos 1/0,5/0 nuolinäppäimillä tai hiirellä. Laskennan tulos päivittyy valinnan mukaan."
                 + "\r\n" + "   2) Vahvuusluvut tuloksineen, esim. +1505 =1600 -1611 +1558, jossa + voitto, = tasan ja - tappio"
-                + "\r\n" + "   3) Turnauksen pistemäärä ja vastustajien vahvuusluvut, esim. 2.5 1505 1600 1611 1558, voi käyttää myös desimaalipilkkua 1,5 1505 1600 1611 1558"
-                + "\r\n" + "   4) CSV eli pilkulla erotetut arvot, jossa 2, 3, 4 tai 5 kenttää: HUOM! Käytä tuloksissa desimaalipistettä, esim. 0.5 tai 10.5!"
+                + "\r\n" + "   3) Turnauksen pistemäärä ja vastustajien vahvuusluvut, esim. 1.5 1505 1600 1611 1558, voi käyttää myös desimaalipilkkua 1,5 1505 1600 1611 1558 sekä puolikasta esim. 1½ 1505 1600 1611 1558"
+                + "\r\n" + "   4) CSV eli pilkulla erotetut arvot, jossa 2, 3, 4 tai 5 kenttää: HUOM! Käytä tuloksissa desimaalipistettä, esim. 0.5 tai 10.5, tai puolikasta eli ½ tai 10½"
                 + "\r\n" + "           2: oma selo,ottelut   esim. 1712,2.5 1505 1600 1611 1558 tai 1712,+1505  HUOM! Desimaalipiste!"
                 + "\r\n" + "           3: oma selo,pelimaara,ottelut esim. 1525,0,+1505 +1441"
                 + "\r\n" + "           4: minuutit,oma selo,pelimaara,ottelut  esim. 90,1525,0,+1525 +1441"
-                + "\r\n" + "           5: minuutit,oma selo,pelimaara,ottelu,tulos esim. 90,1683,2,1973,0 (jossa tasapeli 1/2 tai 0.5)"
+                + "\r\n" + "           5: minuutit,oma selo,pelimaara,ottelu,tulos esim. 90,1683,2,1973,0 (jossa tasapeli voidaan antaa 1/2, ½ tai 0.5)"
                 + "\r\n" + "      Jos miettimisaika on antamatta, käytetään ikkunasta valittua"
                 + "\r\n" + "      Jos pelimäärä on antamatta, käytetään tyhjää"
                 + "\r\n"

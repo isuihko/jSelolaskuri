@@ -122,4 +122,11 @@ public class UnitTest4_TarkistaCSV {
         assertEquals(Vakiot.SYOTE_VIRHE_BUTTON_TULOS, t.Item1);
     }    
 
+    // Turnauksen tulos 2½ syötetty ½2, jolloin se tarkastuksessa tulkitaan vastustajan seloksi
+    @Test
+    public void CSV_VirheellinenTurnauksenTulos()
+    {
+        t = u.Testaa("90,1525,20,½2 1505 1600 1611 1558");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }
 }

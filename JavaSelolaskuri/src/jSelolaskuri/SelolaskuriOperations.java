@@ -284,6 +284,15 @@ public class SelolaskuriOperations {
                     // Laita molemmat 1.5 ja 1,5 toimimaan, InvariantCulture
                     if (tempString.indexOf(',') >= 0)  // korvaa pilkku pisteellä...
                         tempString = tempString.replace(",", ".");
+
+                    // Jos ottelutulon lopussa on puolikas, niin muuta se ".5":ksi, esim. 10½ -> 10.5
+                    // Jos ottelutulos on ½, niin tässä se muutetaan "0.5":ksi
+                    if (tempString.indexOf('½') == tempString.length() - 1) {
+                        if (tempString.length() > 1)
+                            tempString = tempString.replace("½", ".5");
+                        else
+                            tempString = "0.5";  // muutetaan suoraan, koska oli pelkästään "½"
+                    }
                     
                     try {
                         syotetty_tulos = Float.parseFloat(tempString);
@@ -498,7 +507,7 @@ public class SelolaskuriOperations {
         return aika;        
     }
     
-    // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "1", "1.0" tai "1,0"
+    // Yksittäisen ottelun tulos joko "0", "0.0", "0,0", "0.5", "0,5", "1/2", "½" (alt-171), "1", "1.0" tai "1,0"
     // Toistaiseksi CSV-formaatin tuloksissa voi käyttää vain desimaalipistettä, joten ei voida syöttää 
     // tuloksia pilkun kanssa kuten "0,0", "0,5" ja "1,0". Tarkistetaan ne kuitenkin varalta.
     public Vakiot.OttelunTulos_enum SelvitaTulosCSV(String s)
@@ -506,7 +515,7 @@ public class SelolaskuriOperations {
         Vakiot.OttelunTulos_enum tulos = Vakiot.OttelunTulos_enum.TULOS_MAARITTELEMATON;
         if (s.equals("0") || s.equals("0.0") || s.equals("0,0"))
             tulos = Vakiot.OttelunTulos_enum.TULOS_TAPPIO;
-        else if (s.equals("0.5") || s.equals("0,5") || s.equals("1/2"))
+        else if (s.equals("0.5") || s.equals("0,5") || s.equals("1/2") || s.equals("½"))
             tulos = Vakiot.OttelunTulos_enum.TULOS_TASAPELI;
         else if (s.equals("1") || s.equals("1.0") || s.equals("1,0"))
             tulos = Vakiot.OttelunTulos_enum.TULOS_VOITTO;

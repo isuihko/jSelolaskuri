@@ -160,4 +160,26 @@ public class UnitTest2_TarkistaSyote {
         t = u.Testaa("1996", "-6 1977 2013 1923 1728 1638 1684 1977 2013 1923 1728 1638 1684");
         assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
     }    
+
+    // Turnauksen tulos 2½ syötetty ½2, jolloin se tarkastuksessa tulkitaan vastustajan seloksi
+    @Test
+    public void VirheellinenSyoteTurnauksenTulos5()
+    {
+        t = u.Testaa("1525", "0", "½2 1505 1600 1611 1558");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }
+    // Turnauksen tulos 2½ syötetty 2 ½, jolloin 2 on turnauksen tulos ja "½" tulkitaan vastustajan seloksi
+    @Test
+    public void VirheellinenSyoteTurnauksenTulos6()
+    {
+        t = u.Testaa("1525", "0", "2 ½ 1505 1600 1611 1558");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }
+    // Turnauksen tulos 2½ syötetty 2.½, jolloin "2.½" tulkitaan vastustajan seloksi
+    @Test
+    public void VirheellinenSyoteTurnauksenTulos7()
+    {
+        t = u.Testaa("1525", "0", "2.½ 1505 1600 1611 1558");
+        assertEquals(Vakiot.SYOTE_VIRHE_VASTUSTAJAN_SELO, t.Item1);
+    }    
 }

@@ -350,7 +350,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Java 19.8.2018 github.com/isuihko/jSelolaskuri"/>
+        <Property name="text" type="java.lang.String" value="Java 20.8.2018 github.com/isuihko/jSelolaskuri"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel5">
@@ -589,7 +589,7 @@
         </Component>
         <Component class="javax.swing.JRadioButton" name="tulosTasapeli_btn">
           <Properties>
-            <Property name="text" type="java.lang.String" value="1/2 = tasapeli"/>
+            <Property name="text" type="java.lang.String" value="&#xbd; = tasapeli"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tulosTasapeli_btnActionPerformed"/>
