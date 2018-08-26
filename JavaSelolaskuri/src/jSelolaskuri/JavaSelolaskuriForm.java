@@ -138,6 +138,11 @@ import java.io.IOException;
  *                  - Lomakkeeseen vaihdettu tasapelibuttonin teksti 1/2 = tasapeli  ->  ½ = tasapeli
  *                  - Lisää testausta, mm. ½:n käyttö. Nyt 76 testiä.
  *
+ * 26.8.2018        - Näytön tekstejä muutettu: Laske uusi SELO -> Laske vahvuusluku,
+ *                    sekä Käytä uutta SELOa jatkolaskennassa -> Käytä tulosta jatkolaskennassa
+ *                    Myös poistettu näiden tekstien SELO<->PELO -muunnokset
+ * 
+ * 
  * 
  * TODO:  koodi ei ole vielä Java-koodaustyylin mukaista kaikin puolin.
  *        Tämä on ensimmäinen Java-ohjelmani ja muutan tätä vielä paljonkin
@@ -169,7 +174,7 @@ import java.io.IOException;
 //      Vastustajan SELO : 3 1525 1441 1973 1718 1784 1660 1966
 // Tai lähtemällä tilanteesta 1525 ja 0 ja sitten syöttämällä kukin ottelu erikseen
 // (vastustajan selo ja valintanapeista tulos, esim. 1525 (x) 1 = voitto)
-// ja klikkaamalla Käytä uutta SELOa jatkolaskennassa (seuraava 1441 (x) 1 = voitto jne.).
+// ja klikkaamalla Käytä tulosta jatkolaskennassa (seuraava 1441 (x) 1 = voitto jne.).
 // 
 
 
@@ -361,7 +366,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         jLabel1.setText("Shakin vahvuusluvun laskenta");
 
         laskeUusiSelo_btn.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        laskeUusiSelo_btn.setText("Laske uusi SELO");
+        laskeUusiSelo_btn.setText("Laske vahvuusluku");
         laskeUusiSelo_btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 laskeUusiSelo_btnActionPerformed(evt);
@@ -369,14 +374,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         });
 
         kaytaUutta_btn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        kaytaUutta_btn.setText("Käytä uutta SELOa jatkolaskennassa");
+        kaytaUutta_btn.setText("Käytä tulosta jatkolaskennassa");
         kaytaUutta_btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 kaytaUutta_btnActionPerformed(evt);
             }
         });
 
-        jLabel12.setText("Java 20.8.2018 github.com/isuihko/jSelolaskuri");
+        jLabel12.setText("Java 26.8.2018 github.com/isuihko/jSelolaskuri");
 
         turnauksenTulos_out.setEditable(false);
         turnauksenTulos_out.setFocusable(false);
@@ -868,8 +873,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     // --------------------------------------------------------------------------------
     // Painikkeiden toiminta
     // --------------------------------------------------------------------------------
-    //    Laske uusi SELO  (pikashakissa Laske uusi PELO)
-    //    Käytä uutta SELOa jatkolaskennassa
+    //    Laske vahvuusluku
+    //    Käytä tulosta jatkolaskennassa
 
     // Suoritetaan laskenta -button
     private void laskeUusiSelo_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_laskeUusiSelo_btnActionPerformed
@@ -894,7 +899,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     // Ja sitten siirrytään valmiiksi vastustajan SELO-kenttään.
     //
     // Jos painiketta oli painettu ennen ensimmäistäkään laskentaa, niin
-    // saadaan pelaajaa luodessa käytetyt alkuarvot SELO 1525 ja pelimääärä 0.
+    // saadaan pelaajaa luodessa käytetyt alkuarvot SELO 1525 ja pelimäärä 0.
     private void kaytaUutta_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kaytaUutta_btnActionPerformed
         int selo1 = so.HaeViimeksiLaskettuSelo();
         int pelimaara1 = so.HaeViimeksiLaskettuPelimaara();
@@ -1108,9 +1113,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
     
     
     // --------------------------------------------------------------------------------
-    // Miettimisajan valinnan mukaan tekstit: SELO (pidempi peli) vai PELO (pikashakki)
-    //
-    // XXX: Hm... onko liian monta vaihdettavaa otsikkokenttää? Esim. Laske uusi SELO -> Laske uusi vahvuusluku
+    // Miettimisajan valinnan mukaan tekstit: SELO (pidempi peli) vai PELO (pikashakki)   
     // --------------------------------------------------------------------------------
     private void vaihdaSeloPeloTekstit(Vakiot.VaihdaMiettimisaika_enum suunta)
     {
@@ -1142,8 +1145,6 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         OmaVahvuusluku_teksti.setText(OmaVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
         VastustajanVahvuusluku_teksti.setText(VastustajanVahvuusluku_teksti.getText().replaceAll(alkup, uusi));
         UusiSELO_teksti.setText(UusiSELO_teksti.getText().replaceAll(alkup, uusi));
-        laskeUusiSelo_btn.setText(laskeUusiSelo_btn.getText().replaceAll(alkup, uusi));
-        kaytaUutta_btn.setText(kaytaUutta_btn.getText().replaceAll(alkup, uusi));
     }
     
     // Vaihda aktiiviseksi vähintään 90 minuuttia
@@ -1269,15 +1270,14 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         LaskeOttelunTulosLomakkeelta();
     }//GEN-LAST:event_tulosTasapeli_btnKeyPressed
 
-    
+    // Tyhjennä talteen otetut vastustajien/otteluiden tiedot
     private void TyhjennaVastustajat()
     {
         vastustajanSelo_jComboBox.removeAllItems();      
     }
     
-    // vastustajanSelo-kentässä clear ja Enter, niin tyhjennetään syötteet ja tuloskentät
-    //
-    // tyhjentää lomakkeen kentät ja palauttaa alkuarvot, miettimisaika vähintään 90 min, ei tulospainikkeita valittuna
+    // Tyhjentää lomakkeen syötteet ja tuloskentät ja palauttaa alkuarvot, miettimisaika vähintään 90 min, ei tulospainikkeita valittuna
+    // Suoritetaan kun kirjoitetaan sana "clear" (ilman lainausmerkkejä) vastustajien kenttään ja painetaan Enter
     private void TyhjennaSyotteet()
     {
         selo_in.setText("");
@@ -1295,6 +1295,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         TyhjennaVastustajat();
     }
     
+    // tyhjennä tuloskentät näytöltä    
     private void TyhjennaTuloskentat()
     {
         uusiSelo_out.setText("");
@@ -1308,6 +1309,8 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         pisteEro_out.setText("");
     }
           
+    // Tallenna testausta varten listaan vastustajien & otteluiden tietoja, ei nollata muita kenttiä
+    // Suoritetaan kun kirjoitetaan sana "test" (ilman lainausmerkkejä) vastustajien kenttään ja painetaan Enter
     private void TallennaTestaustaVartenVastustajia()
     {
         TyhjennaVastustajat();
@@ -1331,6 +1334,17 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         vastustajanSelo_jComboBox.addItem("90,1713,3,1718,1");
         
         vastustajanSelo_jComboBox.addItem("90,1713,3,1718,½");
+        
+        // Lisää Joukkuepikashakin SM-kisoista otteluita
+        // Esimerkki Joukkuepikashakin SM 2018 alkukilpailut, alkukilpailuryhmä C  4.8.2018, LauttSSK 1 pöytä 1
+        // Kilpailuryhmä C: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+        vastustajanSelo_jComboBox.addItem("5,2180,2054,14.5 1914 2020 1869 2003 2019 1979 2131 2161 2179 2392 1590 1656 1732 1944 1767 1903 1984 2038 2083 2594 2324 1466 1758");
+        // Esimerkki Joukkuepikashakin SM 2018 alkukilpailut, alkukilpailuryhmä C  4.8.2018, LauttSSK 1 pöytä 4
+        // Kilpailuryhmä C: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+        vastustajanSelo_jComboBox.addItem("5,2045,1225,19.5 1548 1560 1699 1737 1735 1880 1856 2019 2102 2177 1539 1531 1672 1592 1775 1842 1847 1905 1970 2308 1988 1454 1481");
+        // Esimerkki Joukkuepikashakin SM 2018 sijoituskilpailut 5.8.2018, sijoitusryhmä C, LauttSSK 4 pöytä 4
+        // Sijoitusryhmä 5: http://www.shakki.net/cgi-bin/selo?do=turnaus&turnaus_id=5068
+        vastustajanSelo_jComboBox.addItem("5,1262,,11 1623 1591 1318 1560 1493 1417 1343 1493 1524 1227 1716 1490 1454 1479 1329 1429 1444 1289 1576 1445 1280");        
     }
     
     private void vastustajanSelo_jComboBox_KasitteleEnter()
@@ -1339,7 +1353,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
         
         if (s.equals("clear")) {
             // Huom! Jättää muistiin aiemmin lasketut vahvuusluvun ja pelimäärän, jolloin
-            // painike Käytä uutta SELOa jatkolaskennassa voi hakea ne (ei siis palauta 1525,0)
+            // painike Käytä tulosta jatkolaskennassa voi hakea ne (ei siis palauta 1525,0)
             TyhjennaSyotteet();
             TyhjennaTuloskentat();
 
@@ -1401,7 +1415,7 @@ public class JavaSelolaskuriForm extends javax.swing.JFrame {
                 + "\r\n"
                 + "\r\n" + "Laskenta suoritetaan klikkaamalla laskenta-painiketta tai painamalla Enter vastustajan SELO-kentässä sekä (jos yksi vastustaja) tuloksen valinta -painikkeilla."
                 + "\r\n"
-                + "\r\n" + "Jos haluat jatkaa laskentaa uudella vahvuusluvulla, klikkaa Käytä uutta SELOa jatkolaskennassa. Jos ei ole vielä ollut laskentaa, saadaan uuden pelaajan oletusarvot SELO 1525 ja pelimäärä 0.";
+                + "\r\n" + "Jos haluat jatkaa laskentaa uudella vahvuusluvulla, klikkaa Käytä tulosta jatkolaskennassa. Jos ei ole vielä ollut laskentaa, saadaan uuden pelaajan oletusarvot SELO 1525 ja pelimäärä 0.";
         JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: Ohjeita", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_ohjeita_jMenuItemActionPerformed
                                 
