@@ -1,44 +1,31 @@
-# jSelolaskuri
-Shakin vahvuuslukulaskenta, Java-ohjelmointikieli (Java Swing eli desktop application)
+### jSelolaskuri
+Shakin vahvuuslukulaskenta
 
-You can find more documents and comments from C# version https://github.com/isuihko/selolaskuri
-
-27.5.2018 Started refactoring and documenting
-
-31.7. - 1.8.2018 Refactoring continued finally, cleaning and reorganizing code, taking new features from C# version. Data made hidden and used getters and setters. Added the exactly same unit tests that C# version has (modified to make them work).
-
-2.8.2018 Added jComboBox for storing opponent+result input (which can have a lot of number) for later use so it can be chosen again, modified and used in new calculations. Added also executable file dist/JavaSelolaskuri.jar which can be downloaded and executed with command line java -jar JavaSelolaskuri.jar
-
-4.8.2018 Added support for CSV format with 2-5 values. E.g. with two values can give own selo,matches e.g. 1712,2.5 1525 1600 1611 1558
-
-8.8.2018 Small modifications to form, e.g. instruction that Enter calculates in vastustajanSelo field. Version date 8.8.2018.
-
-12.8.2018 Edit menu with cut/copy/paste. Can copy to and paste from clipboard opponents/results field. Version date 12.8.2018.
-
-14.8.2018 Testing modifications, simplifications e.g. using default values if some data was not defined. Now also uses enums for thinking time and match result. No changes to operation so not changed version date.
-
-19.8.2018 Updates to CSV format checking and adds new unit tests mostly related to CSV format.
-
-20.8.2018 Adds usage of half character "1/2" in chess results and new unit tests for that.
-
-------
-
-Shakin vahvuusluvun laskenta
-
-30.11.2017 - 20.8.2018 Java, NetBeans IDE 8.2
-
-- 31.7. - 4.8. muutettu ja siivottu koodia merkittävästi. Pohjana käytetty C#-version koodia, joka oli paljon pidemmällä ja sisälsi  enemmän laskentaakin
-- Nyt C#- ja Java-versiot ovat ominaisuuksiltaan samat
-
-Lataaminen: Suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) git clone https://github.com/isuihko/jSelolaskuri
-
-Ohjelman suoritus (ainakin Windows):
-Lataa jar-tiedosto JavaSelolaskuri/dist-hakemistosta ja suorita se Windowsissa komentorivipromptissa komennolla java -jar JavaSelolaskuri.jar
-Suora latauslinkki: https://github.com/isuihko/jSelolaskuri/blob/master/JavaSelolaskuri/dist/JavaSelolaskuri.jar valitse Download.
-Java Runtime Environment pitää olla asennettuna, jotta tämä toimisi.
+Java Swing desktop application, NetBeans IDE 8.2.
 
 Lasketaan shakinpelaajalle uusi vahvuusluku SELO tai PELO, ks. http://www.shakki.net/cgi-bin/selo
 - SELO on Suomen kansallinen shakin vahvuusluku, esim. https://fi.wikipedia.org/wiki/Elo-luku#Suomen_Elo
-- PELO on vastaavasti pikashakin vahvuusluku, jota käytetään kun miettimisaika on enintään 10 minuuttia. Eri miettimisajoille on omat kaavansa.
+- PELO on vastaavasti pikashakin vahvuusluku, jota käytetään kun miettimisaika on enintään 10 minuuttia. Eri miettimisajoille on omat laskentakaavansa.
 
-Enemmän tietoa C#/.NET-version README.md:ssä -> https://github.com/isuihko/selolaskuri
+Enemmän ohjeita ohjelman C#-versiossa: https://github.com/isuihko/selolaskuri
+
+------
+
+### Lataaminen ja käyttäminen
+
+**Ohjelman asennus (vain Windows):**
+Lataa jar-tiedosto JavaSelolaskuri/dist-hakemistosta ja suorita se Windowsissa komentorivipromptissa komennolla **java -jar JavaSelolaskuri.jar**
+Suora latauslinkki: https://github.com/isuihko/jSelolaskuri/blob/master/JavaSelolaskuri/dist/JavaSelolaskuri.jar josta valitse Download.
+*Java Runtime Environment* pitää olla asennettuna, jotta ohjelma toimisi (Java SE 8 tai uusi Java SE 10): http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+Voit ladata lähdekoodit suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) *git clone https://github.com/isuihko/jSelolaskuri* ja kääntää ohjelman itsekin.
+
+------
+
+You can find more documents about usage and comments from C# version https://github.com/isuihko/selolaskuri. Java and C# versions have same functionality.
+
+-31.7. - 1.8.2018 Refactoring continued: cleaning and reorganizing code, taking new features from C# version. Added unit tests from C# version.
+-2.8.2018 Added jComboBox for storing opponent+result input. Added executable dist/JavaSelolaskuri.jar which can be downloaded and then executed (only in Windows) with command line java -jar JavaSelolaskuri.jar
+-4.8.2018 Added support for CSV format with 2-5 values. E.g. with two values can give own selo,matches 1712,2.5 1525 1600 1611 1558 (and thinking time taken from form selection)
+-12.8.2018 Edit menu. Can copy to and paste from clipboard opponents/results (Vastustajat field). Version date 12.8.2018.
+-19.-20.8.2018 Updates to CSV format checking and adds new unit tests mostly related to CSV format, usage of half character "1/2" and more unit tests.
