@@ -14,7 +14,7 @@ Enemmän ohjeita ohjelman C#-versiossa: https://github.com/isuihko/selolaskuri
 **Ohjelman asennus (vain Windows):**
 Lataa jar-tiedosto JavaSelolaskuri/dist-hakemistosta ja suorita se Windowsissa komentorivipromptissa komennolla **java -jar JavaSelolaskuri.jar**
 Suora latauslinkki: https://github.com/isuihko/jSelolaskuri/blob/master/JavaSelolaskuri/dist/JavaSelolaskuri.jar josta valitse Download.
-*Java Runtime Environment* pitää olla asennettuna, jotta ohjelma toimisi (Java SE 8 tai uusi Java SE 10): http://www.oracle.com/technetwork/java/javase/downloads/index.html
+*Java Runtime Environment* (JRE) pitää olla asennettuna, jotta ohjelma toimisi (Java SE 8 tai uusi Java SE 10): http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 Voit ladata lähdekoodit suoraan netistä GitHub.com:sta selaimella tai komentorivillä (git asennettuna) *git clone https://github.com/isuihko/jSelolaskuri* ja kääntää ohjelman itsekin.
 
